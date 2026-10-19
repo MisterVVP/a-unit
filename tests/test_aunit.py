@@ -121,7 +121,9 @@ class Sources(unittest.TestCase):
     def test_crlf_checkout_produces_same_output(self):
         before = aunit.render(self.root)
         for path in (self.root / 'agents').rglob('*.md'):
-            path.write_bytes(path.read_bytes().replace(b'\n', b'\r\n'))
+            # Normalize an existing Windows checkout before constructing CRLF;
+            # replacing raw LF bytes in CRLF would create invalid CRCRLF.
+            path.write_bytes(path.read_text(encoding='utf-8').encode('utf-8').replace(b'\n', b'\r\n'))
         self.assertEqual(before, aunit.render(self.root))
 
 
