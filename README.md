@@ -2,7 +2,7 @@
 
 **No Gods. No Masters. Just Agents.**
 
-A portable engineering squad: Hannibal coordinates your main Codex CLI session and calls eleven focused specialist agents. Each installed definition contains the complete shared engineering contract and its role instructions. No source checkout or private documentation is needed at runtime.
+A portable engineering squad: Hannibal coordinates your main Codex CLI session and calls thirteen focused specialist agents. Each installed definition contains the complete shared engineering contract and its role instructions. No source checkout or private documentation is needed at runtime.
 
 **Status: local Codex CLI packaging preview.** The Python installer and automated checks are implemented. Adapter wiring was exercised on Linux with Codex CLI **0.159.2**, using an offline deterministic Responses fixture. Live-model engineering quality and macOS/Windows runtime behavior have not been evaluated. GitHub Packages and other runtime adapters are deferred.
 
@@ -11,7 +11,7 @@ A portable engineering squad: Hannibal coordinates your main Codex CLI session a
 Prerequisites: Git, Python **3.11+** with `venv`/pip, and Codex CLI. Use **0.159.2** as the compatibility baseline; older versions are unverified. Authenticate Codex normally before your live trial (`codex login`).
 
 ```bash
-git clone --branch feat/codex-cli-packaging https://github.com/MisterVVP/a-unit.git
+git clone https://github.com/MisterVVP/a-unit.git
 cd a-unit
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
@@ -32,7 +32,7 @@ Inside Codex, explicitly invoke the skill:
 $a-unit Investigate this repository and propose a small, testable Python improvement. Do not edit yet.
 ```
 
-Hannibal stays in the main session. It selects specialists when useful; small tasks can be done directly. To verify delegation explicitly, ask:
+Hannibal stays in the main session. It invokes Trace Ventura for every coding task, including small changes, to plan observability early and validate affected coverage before completion. It invokes Dock Norris whenever work involves containerization, a local Dockerized setup, or Kubernetes deployment. Other specialists are selected when useful; Hannibal can implement small changes directly while still performing the required consultations. To verify delegation explicitly, ask:
 
 ```text
 $a-unit Use aunit-snake-eyes for an inspection-only review of the Python code. Report findings and checks; do not edit files.
@@ -53,7 +53,7 @@ Paths with spaces work when quoted. The working directory never implicitly selec
 
 | Artifact | User scope | Project scope |
 | --- | --- | --- |
-| Eleven agent TOMLs | `$CODEX_HOME/agents/aunit-*.toml` (default `~/.codex/agents`) | `<project>/.codex/agents/aunit-*.toml` |
+| Thirteen agent TOMLs | `$CODEX_HOME/agents/aunit-*.toml` (default `~/.codex/agents`) | `<project>/.codex/agents/aunit-*.toml` |
 | Hannibal activation skill | `~/.agents/skills/a-unit/` | `<project>/.agents/skills/a-unit/` |
 | Ownership manifest | `$CODEX_HOME/a-unit-manifest.json` | `<project>/.codex/a-unit-manifest.json` |
 
@@ -108,8 +108,14 @@ Writes use atomic per-file replacement with recoverable backups. An ordinary wri
 | Swift Justice | iOS | [swift-justice](agents/swift-justice.md), `aunit-swift-justice` |
 | Murdock | QA and testing | [murdock](agents/murdock.md), `aunit-murdock` |
 | Pit Crew | Integration and runtime | [pit-crew](agents/pit-crew.md), `aunit-pit-crew` |
+| Dock Norris | Docker, Kubernetes, and DevOps delivery | [dock-norris](agents/dock-norris.md), `aunit-dock-norris` |
+| Trace Ventura | Observability, golden signals, and SLI/SLOs | [trace-ventura](agents/trace-ventura.md), `aunit-trace-ventura` |
 
 Each specialist supports bounded implement, investigate, or review assignments as appropriate. Model and reasoning selection inherit from the session. A fresh domain reviewer should receive the requirements, baseline/diff, edit restrictions, and evidence rather than relying on the author's summary.
+
+Trace Ventura reuses existing telemetry and checks metrics, structured logs, distributed traces, and applicable dashboards. For services, it covers latency, traffic, errors, saturation, a clearly defined availability/uptime signal, and SLI/SLO views with targets, error budgets, and missing-data behavior. It distinguishes process uptime and scrape health from service availability. SLO targets follow project policy or remain explicitly proposed until agreed. Code without a running service still gets an observability consultation, with evidence for inapplicable signals instead of unnecessary monitoring infrastructure.
+
+Dock Norris covers reproducible images, secure Docker/Compose setups, Kubernetes resource/probe configuration, and safe delivery/rollback practices. It coordinates runtime wiring with Pit Crew and rollout telemetry with Trace Ventura. Required routing is an instruction contract; runtime permissions and user authorization still govern all edits and deployments. Missing required specialists are reported as installation blockers. Both new definitions include authoritative best-practice links, including the Google SRE book in Trace Ventura's instructions.
 
 Examples:
 
@@ -117,6 +123,7 @@ Examples:
 $a-unit Fix the Python pagination regression and run the relevant tests.
 $a-unit Add this API response field and expose it in the React JavaScript UI. Coordinate backend, Face, and QA ownership.
 $a-unit Have a fresh aunit-face inspect the frontend diff for correctness and accessibility. Review only; do not edit.
+$a-unit Add a local Docker Compose setup with Dock Norris and have Trace Ventura check the service telemetry and golden-signal dashboard.
 ```
 
 Canonical `mode` describes behavioral intent. Plan Solo is inspection only; a review assignment restricts any specialist to inspection. This adapter does **not** translate `mode` into an independent sandbox or disable tools. The parent session's sandbox, approvals, and permissions govern children. Runtime-supported role tool reductions vary by Codex version; this adapter deliberately emits only name, description, and developer instructions. Target repository requirements apply within the runtime instruction hierarchy. Display names remain provisional codenames.
@@ -128,6 +135,9 @@ Canonical `mode` describes behavioral intent. Plan Solo is inspection only; a re
 .venv/bin/python -m unittest discover -s tests -v
 # Optional: installed Codex + permission to bind a loopback port; no API key.
 .venv/bin/python tests/codex_smoke.py
+# Check either new specialist's actual loading and invocation with the same fixture.
+.venv/bin/python tests/codex_smoke.py --role dock-norris
+.venv/bin/python tests/codex_smoke.py --role trace-ventura
 ```
 
 In a managed environment with a separate execution server, use `tests/codex_smoke.py --work-dir /path/shared/with/that/server` if needed. The smoke check uses only temporary installations and a deterministic local Responses fixture, not a live model. It removes extracted package sources before starting Codex and verifies actual spawn/wait events and provider-bound instruction content.
@@ -135,8 +145,8 @@ In a managed environment with a separate execution server, use `tests/codex_smok
 | Check | Evidence in this implementation |
 | --- | --- |
 | Python validation, rendering, installer, local ZIP | 25 tests passed on Linux / Python 3.12 |
-| Actual CLI discovery and activation | Codex CLI 0.159.2 on Linux: all 11 roles advertised, complete project skill injected explicitly |
-| Actual child invocation | Python specialist spawn/wait completed; full shared contract and role body present in its developer instructions |
+| Actual CLI discovery and activation | Codex CLI 0.159.2 on Linux: all 13 roles advertised, complete project skill injected explicitly |
+| Actual child invocation | Python, container/DevOps, and observability specialist fixture checks; full shared contract and role body present in child developer instructions |
 | Inheritance | Child request retained parent model and reasoning; read-only parent permission context present |
 | Scope behavior | Project-over-user role precedence and custom `CODEX_HOME` exercised; duplicate skill names made bare `$a-unit` ambiguous |
 | Preferred user skill root | Upstream released-source conventions and path tests; real home directory left untouched by smoke tests |
