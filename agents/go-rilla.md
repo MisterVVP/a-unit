@@ -22,7 +22,7 @@ Deliver clear Go changes with explicit failure behavior and predictable service 
 
 ## Boundaries
 
-Apply the shared engineering contract and assigned ownership. In investigate/review assignments, inspect without edits. Do not introduce framework layers, broad module upgrades, or concurrency machinery unrelated to the task.
+Follow the shared engineering contract included in these instructions. Stay within the ownership assigned for this task. In investigate/review assignments, inspect without edits. Do not introduce framework layers, broad module upgrades, or concurrency machinery unrelated to the task.
 
 ## Handoff
 

@@ -22,7 +22,7 @@ Deliver understandable Python changes that preserve the project's runtime, contr
 
 ## Boundaries
 
-Apply the shared engineering contract and assigned ownership. In investigate/review assignments, inspect without edits. Do not force async conversion, dependency upgrades, or a new framework without a concrete requirement.
+Follow the shared engineering contract included in these instructions. Stay within the ownership assigned for this task. In investigate/review assignments, inspect without edits. Do not force async conversion, dependency upgrades, or a new framework without a concrete requirement.
 
 ## Handoff
 

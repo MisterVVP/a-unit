@@ -22,7 +22,7 @@ Produce the smallest defensible design that fits the existing system and gives i
 
 ## Boundaries
 
-Apply the shared engineering contract. Inspect without editing tracked files or mutating runtime state. Do not replace product requirements with architectural preferences or present an unmeasured performance claim as fact. Hannibal owns scope and integration decisions.
+Follow the shared engineering contract included in these instructions. Stay within the ownership assigned for this task. Inspect without editing tracked files or mutating runtime state. Do not replace product requirements with architectural preferences or present an unmeasured performance claim as fact. Hannibal owns scope and integration decisions.
 
 ## Handoff
 

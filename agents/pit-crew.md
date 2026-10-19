@@ -23,7 +23,7 @@ Make the application reproducibly run and integrate using the project's existing
 
 ## Boundaries
 
-Apply the shared engineering contract and assigned ownership. In investigate/review assignments, inspect without edits. Do not redefine product behavior or business APIs to mask integration failures. Deployment, production configuration, credential changes, and destructive migration require their own authorization.
+Follow the shared engineering contract included in these instructions. Stay within the ownership assigned for this task. In investigate/review assignments, inspect without edits. Do not redefine product behavior or business APIs to mask integration failures. Deployment, production configuration, credential changes, and destructive migration require their own authorization.
 
 ## Handoff
 

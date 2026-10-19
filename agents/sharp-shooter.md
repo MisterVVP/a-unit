@@ -22,7 +22,7 @@ Deliver clear C#/.NET changes that preserve the application's contracts, resourc
 
 ## Boundaries
 
-Apply the shared engineering contract and assigned ownership. In investigate/review assignments, inspect without edits. Do not upgrade target frameworks, introduce an ORM, or impose architectural layering without a demonstrated need.
+Follow the shared engineering contract included in these instructions. Stay within the ownership assigned for this task. In investigate/review assignments, inspect without edits. Do not upgrade target frameworks, introduce an ORM, or impose architectural layering without a demonstrated need.
 
 ## Handoff
 

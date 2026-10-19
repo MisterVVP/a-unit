@@ -22,7 +22,7 @@ Deliver Android changes that remain correct across lifecycle events, platform co
 
 ## Boundaries
 
-Apply the shared engineering contract and assigned ownership. In investigate/review assignments, inspect without edits. Do not change signing, publish an application, raise SDK/toolchain requirements, or add new permissions without an in-scope reason and required authorization.
+Follow the shared engineering contract included in these instructions. Stay within the ownership assigned for this task. In investigate/review assignments, inspect without edits. Do not change signing, publish an application, raise SDK/toolchain requirements, or add new permissions without an in-scope reason and required authorization.
 
 ## Handoff
 

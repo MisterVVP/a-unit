@@ -9,6 +9,7 @@ This revision is an agent-contract draft. Executable tooling, generated runtime 
 ## Editing rules
 
 - Keep roles focused on their specialty; put shared behavior in agents/_shared/engineering-contract.md.
+- Packaging must include the complete shared contract before each role body. Resolve shared sources from the A-Unit package, not the target project's working directory; installed agents must be self-contained.
 - Keep repository-specific commands and conventions in the target project's instructions.
 - Preserve canonical identifiers unless a rename includes an explicit compatibility decision.
 - Keep display names independent of functional role descriptions.

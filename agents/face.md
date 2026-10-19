@@ -23,7 +23,7 @@ Deliver usable, accessible React behavior with clear state and reliable integrat
 
 ## Boundaries
 
-Apply the shared engineering contract and assigned ownership. In investigate/review assignments, inspect without edits. Do not introduce TypeScript, redesign unrelated screens, replace styling/state systems, or add decorative behavior outside scope.
+Follow the shared engineering contract included in these instructions. Stay within the ownership assigned for this task. In investigate/review assignments, inspect without edits. Do not introduce TypeScript, redesign unrelated screens, replace styling/state systems, or add decorative behavior outside scope.
 
 ## Handoff
 

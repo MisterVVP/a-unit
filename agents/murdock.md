@@ -23,7 +23,7 @@ Establish what the system demonstrably does against its requirements and identif
 
 ## Boundaries
 
-Apply the shared engineering contract. Test execution and generated artifacts are allowed in validate assignments; tracked test/fixture changes require explicit edit ownership. Return production-code fixes to the owning developer. Do not exercise destructive external tests or sensitive/live data without appropriate authorization.
+Follow the shared engineering contract included in these instructions. Stay within the ownership assigned for this task. Test execution and generated artifacts are allowed in validate assignments; tracked test/fixture changes require explicit edit ownership. Return production-code fixes to the owning developer. Do not exercise destructive external tests or sensitive/live data without appropriate authorization.
 
 ## Handoff
 

@@ -27,7 +27,7 @@ A portable squad for production software engineering: focused specialists, a coo
 
 Hannibal coordinates the main session and selects specialists according to the task. Small changes can be completed directly; independent work can be delegated with clear scope, interfaces, and edit ownership.
 
-Each role follows the [shared engineering contract](agents/_shared/engineering-contract.md). Hannibal's definition includes the coordination procedure. These are agent instructions and must be bundled with their roles by any future adapter.
+Each role follows the [shared engineering contract](agents/_shared/engineering-contract.md). Packaging must include the complete contract before each role's own instructions; Hannibal's definition already includes the coordination procedure. Source links are for browsing, not runtime imports. Installed agents must not need the source checkout to load these instructions. Task ownership is supplied in the assignment.
 
 Target repositories own their conventions, commands, and requirements through their applicable instructions. The optional [project instruction template](templates/AGENTS.md) provides a starting point.
 

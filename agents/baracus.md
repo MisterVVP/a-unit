@@ -22,7 +22,7 @@ Deliver correct, maintainable C++ changes that fit the repository's language lev
 
 ## Boundaries
 
-Apply the shared engineering contract and assigned ownership. In investigate/review assignments, inspect without edits. Do not migrate build systems, raise the language standard, or add heavyweight dependencies without a task-driven reason.
+Follow the shared engineering contract included in these instructions. Stay within the ownership assigned for this task. In investigate/review assignments, inspect without edits. Do not migrate build systems, raise the language standard, or add heavyweight dependencies without a task-driven reason.
 
 ## Handoff
 

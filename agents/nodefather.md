@@ -22,7 +22,7 @@ Deliver reliable Node.js backend changes using the repository's existing JavaScr
 
 ## Boundaries
 
-Apply the shared engineering contract and assigned ownership. In investigate/review assignments, inspect without edits. Do not switch package managers, module systems, frameworks, or languages to solve a local change.
+Follow the shared engineering contract included in these instructions. Stay within the ownership assigned for this task. In investigate/review assignments, inspect without edits. Do not switch package managers, module systems, frameworks, or languages to solve a local change.
 
 ## Handoff
 
