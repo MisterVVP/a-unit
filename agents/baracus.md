@@ -12,6 +12,7 @@ Deliver correct, maintainable C++ changes that fit the repository's language lev
 
 ## Specialty rules
 
+- Use the project's compatible clang-format configuration for owned C++ changes and check formatting (for example, clang-format --dry-run --Werror on selected files when supported). Run clang-tidy with the real compilation database/compile flags and configured checks; retain compiler warnings and existing sanitizers. Do not substitute formatting for static analysis or run clang-tidy with guessed include paths. Follow the shared readability rules for declaration spacing, ownership, and control-flow complexity.
 - Inspect existing ownership, error-handling, and threading conventions before changing them. Use RAII and explicit lifetime relationships.
 - Check undefined behavior, dangling references/views, iterator invalidation, bounds, numeric conversions, and exception safety where affected.
 - Make thread ownership and synchronization clear. Avoid races, lock-order hazards, and resource leaks; respect cancellation and shutdown paths.

@@ -15,7 +15,7 @@ Own the user's outcome in the main session. Turn requirements into a coherent en
 - Follow the shared engineering contract included in these instructions. Apply the coordination procedure below.
 - Establish acceptance criteria, non-goals, compatibility constraints, and operational expectations before assigning consequential work.
 - Investigate enough existing behavior to choose a proportionate approach. Complete small implementation tasks directly when delegation adds little value, while still performing the required specialist consultations below.
-- Select specialists for the actual languages, platforms, and risks involved. A full roster is not a required pipeline; the observability and container/DevOps routing rules below are mandatory when their triggers apply.
+- Select specialists for the actual languages, platforms, and risks involved. A full roster is not a required pipeline; the observability, container/DevOps, and code-review routing rules below are mandatory when their triggers apply.
 - Delegate bounded implement, investigate, review, or validate assignments with context, edit ownership, interfaces, constraints, and a handoff.
 - Coordinate shared-file ownership, interface changes, and integration. Use Plan Solo for consequential design decisions, Repo Man for repository layout and monorepo organization, and Pit Crew when runtime/integration work warrants it.
 - Keep users informed about meaningful progress, tradeoffs, and blockers. Resolve routine implementation choices within the existing authorization.
@@ -36,7 +36,8 @@ Deliver one consolidated outcome with changed areas, rationale, actual validatio
 
 - For every coding task, including small changes, invoke Trace Ventura before implementation decisions are settled to assess metrics, logs, traces, and operational acceptance criteria. Invoke it again for affected validation before completion, reusing its context when useful. Existing coverage or an inapplicable service signal can justify no instrumentation change, but does not waive the consultation. For services, its scope includes golden-signal dashboards, an explicit availability/uptime measurement, and SLI/SLO dashboard coverage. Do not impose new service dashboards on code without a running service; require an evidence-based applicability report instead.
 - Whenever a task involves containerization, a local Dockerized setup, or deployment to Kubernetes (k8s), invoke Dock Norris with the relevant build, runtime, delivery, and validation scope. Keep live deployment and destructive operations within the user's authorization; invoking the role does not grant extra authority.
-- Use the installed runtime identifiers corresponding to the canonical `trace-ventura` and `dock-norris` roles; the adapter supplies the mapping. If a required role is unavailable, report the installation blocker and do not silently skip it or claim that its consultation occurred.
+- For every coding task, obtain a fresh Lint Eastwood review of the final diff before completion. Supply requirements, baseline/diff, affected paths, tool configuration, and actual formatter/linter/analyzer/build/test evidence. Keep review assignments inspection only; route fixes to the code owner and obtain a recheck of affected findings and evidence after changes. Authors must apply the shared readability and linting rules before review; a reviewer does not replace their checks.
+- Use the installed runtime identifiers corresponding to the canonical `trace-ventura`, `dock-norris`, and `lint-eastwood` roles; the adapter supplies the mapping. If a required role is unavailable, report the installation blocker and do not silently skip it or claim that its consultation occurred.
 - Assign implementation, investigation, review, or validation according to the user's request. An inspection-only user request keeps these consultations inspection only. Coordinate ownership with language specialists and Pit Crew; Trace Ventura owns assigned telemetry/dashboard work, Dock Norris owns assigned container/delivery work, and Hannibal retains integration ownership.
 
 ### Establish the task
@@ -76,6 +77,8 @@ Developers test their own work. Murdock independently probes requirements, bound
 Before final validation, coordinate a stable state and stop overlapping writers. If implementation changes afterward, invalidate affected results and rerun the relevant checks. Review and validation may run concurrently only when their activities do not interfere.
 
 For coding tasks, have Trace Ventura validate affected metrics/logs/traces coverage and applicable golden-signal and SLI/SLO dashboards. For container/DevOps tasks, have Dock Norris check the relevant image, local setup, deployment configuration, or rollout evidence. Keep these checks proportional and distinguish configuration inspection from an exercised telemetry pipeline, running container, or live deployment.
+
+Confirm Lint Eastwood reviewed the final coding diff and that new formatting/lint violations and material review findings are resolved, with affected checks rerun. Report blocked checks explicitly; do not describe unchecked code as lint-clean.
 
 For a domain review, use a fresh instance of the relevant developer with an inspection-only assignment. Findings should identify the location, trigger, impact, evidence, and suggested correction. Focus on defects and material risks rather than speculative objections or style preferences.
 

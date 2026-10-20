@@ -2,7 +2,7 @@
 
 **No Gods. No Masters. Just Agents.**
 
-A portable engineering squad: Hannibal coordinates your main Codex CLI session and calls fourteen focused specialist agents. Each installed definition contains the complete shared engineering contract and its role instructions. No source checkout or private documentation is needed at runtime.
+A portable engineering squad: Hannibal coordinates your main Codex CLI session and calls fifteen focused specialist agents. Each installed definition contains the complete shared engineering contract and its role instructions. No source checkout or private documentation is needed at runtime.
 
 **Status: local Codex CLI packaging preview.** The Python installer and automated checks are implemented. Adapter wiring was exercised on Linux with Codex CLI **0.159.2**, using an offline deterministic Responses fixture. Live-model engineering quality and macOS/Windows runtime behavior have not been evaluated. GitHub Packages and other runtime adapters are deferred.
 
@@ -32,7 +32,7 @@ Inside Codex, explicitly invoke the skill:
 $a-unit Investigate this repository and propose a small, testable Python improvement. Do not edit yet.
 ```
 
-Hannibal stays in the main session. It invokes Trace Ventura for every coding task, including small changes, to plan observability early and validate affected coverage before completion. It invokes Dock Norris whenever work involves containerization, a local Dockerized setup, or Kubernetes deployment. Other specialists are selected when useful; Hannibal can implement small changes directly while still performing the required consultations. To verify delegation explicitly, ask:
+Hannibal stays in the main session. It invokes Trace Ventura for every coding task, including small changes, to plan observability early and validate affected coverage before completion. It invokes Dock Norris whenever work involves containerization, a local Dockerized setup, or Kubernetes deployment. It requests a fresh Lint Eastwood review of the final diff for every coding task, checking formatting/lint evidence, maintainability, security, and performance risks. Other specialists are selected when useful; Hannibal can implement small changes directly while still performing the required consultations. To verify delegation explicitly, ask:
 
 ```text
 $a-unit Use aunit-snake-eyes for an inspection-only review of the Python code. Report findings and checks; do not edit files.
@@ -53,7 +53,7 @@ Paths with spaces work when quoted. The working directory never implicitly selec
 
 | Artifact | User scope | Project scope |
 | --- | --- | --- |
-| Fourteen agent TOMLs | `$CODEX_HOME/agents/aunit-*.toml` (default `~/.codex/agents`) | `<project>/.codex/agents/aunit-*.toml` |
+| Fifteen agent TOMLs | `$CODEX_HOME/agents/aunit-*.toml` (default `~/.codex/agents`) | `<project>/.codex/agents/aunit-*.toml` |
 | Hannibal activation skill | `~/.agents/skills/a-unit/` | `<project>/.agents/skills/a-unit/` |
 | Ownership manifest | `$CODEX_HOME/a-unit-manifest.json` | `<project>/.codex/a-unit-manifest.json` |
 
@@ -97,6 +97,7 @@ Writes use atomic per-file replacement with recoverable backups. An ordinary wri
 | Agent | Specialty | Definition / installed role |
 | --- | --- | --- |
 | Hannibal | Main-session commander | [hannibal](agents/hannibal.md), via `$a-unit` |
+| Lint Eastwood | Code quality, lint evidence, maintainability, security, and performance review | [lint-eastwood](agents/lint-eastwood.md), `aunit-lint-eastwood` |
 | Repo Man | Repository layout and monorepo organization | [repo-man](agents/repo-man.md), `aunit-repo-man` |
 | Plan Solo | System design, inspection only | [plan-solo](agents/plan-solo.md), `aunit-plan-solo` |
 | B.A. Barac++ | Backend C++ | [baracus](agents/baracus.md), `aunit-baracus` |
@@ -114,15 +115,31 @@ Writes use atomic per-file replacement with recoverable backups. An ordinary wri
 
 Repo Man organizes application and library source under `src/` (including Go), tests under `tests/`, documentation under `docs/`, and IaC, Helm charts, and observability configuration under `ops/`. Its default monorepo layout uses `src/apps/<app>/` and `src/libs/<library>/`, with no application code at the repository root. It checks tool constraints and migration paths with the domain owners; existing project requirements take precedence. Use `aunit-repo-man` for layout design, implementation, or inspection-only reviews.
 
-Each specialist supports bounded implement, investigate, or review assignments as appropriate. Model and reasoning selection inherit from the session. A fresh domain reviewer should receive the requirements, baseline/diff, edit restrictions, and evidence rather than relying on the author's summary.
+Each specialist supports bounded implement, investigate, review, or validate assignments as appropriate to its mode. Lint Eastwood and Plan Solo inspect without tracked-file edits. Model and reasoning selection inherit from the session. A fresh domain reviewer should receive the requirements, baseline/diff, edit restrictions, and evidence rather than relying on the author's summary.
 
 Trace Ventura reuses existing telemetry and checks metrics, structured logs, distributed traces, and applicable dashboards. For services, it covers latency, traffic, errors, saturation, a clearly defined availability/uptime signal, and SLI/SLO views with targets, error budgets, and missing-data behavior. It distinguishes process uptime and scrape health from service availability. SLO targets follow project policy or remain explicitly proposed until agreed. Code without a running service still gets an observability consultation, with evidence for inapplicable signals instead of unnecessary monitoring infrastructure.
 
 Dock Norris covers reproducible images, secure Docker/Compose setups, Kubernetes resource/probe configuration, and safe delivery/rollback practices. It coordinates runtime wiring with Pit Crew and rollout telemetry with Trace Ventura. Required routing is an instruction contract; runtime permissions and user authorization still govern all edits and deployments. Missing required specialists are reported as installation blockers. Both new definitions include authoritative best-practice links, including the Google SRE book in Trace Ventura's instructions.
 
+All coding roles share explicit readability and completion rules: separate function/method declarations and logical blocks with useful blank lines, prefer clear names and cohesive control flow, assess nesting and cyclomatic complexity, and preserve correctness and measured performance without speculative abstractions. Authors format owned changes, run project-configured lint/static analysis and relevant tests, inspect the final diff, and report exact check states. Missing tooling is a validation gap; tests passing is not evidence that lint ran. Project policy and pinned versions govern tooling; no formatter/linter is automatically installed by this adapter.
+
+| Language / area | Standard tooling guidance, subject to project configuration |
+| --- | --- |
+| C++ | clang-format and clang-tidy with a real compilation database |
+| Go | gofmt, existing import tool, go vet, golangci-lint or Staticcheck; manually separate functions because gofmt does not insert blank lines |
+| C# / .NET | .editorconfig, dotnet format verification, enabled Roslyn/.NET analyzers; established StyleCop/Roslynator rules |
+| Python | Ruff format/check or existing Black/isort and Flake8/Pylint; established mypy/Pyright checks |
+| JavaScript / React | ESLint plus Prettier or existing Biome; React Hooks/accessibility rules and existing type checks |
+| Android Kotlin / Java | ktlint/Spotless, established Detekt, Android Lint, and existing Java analysis |
+| iOS Swift / Objective-C | Configured swift-format/SwiftFormat, SwiftLint, or Clang tooling |
+| Integration / operations / telemetry | Relevant language tools plus established shell, YAML, chart, IaC, and telemetry validators |
+
+Lint Eastwood reviews the actual final diff and evidence, reports concrete findings with file/line and impact, and returns fixes to the owning developer. It checks spacing and complexity beyond formatter output, security boundaries, and credible performance risks. Review remains inspection only; missing required roles or checks are reported, and no clean review guarantees vulnerability-free or high-performance code.
+
 Examples:
 
 ```text
+$a-unit Have aunit-lint-eastwood review the final diff, verify lint evidence, and report maintainability, security, and performance findings. Inspect only; do not edit.
 $a-unit Have aunit-repo-man review our monorepo layout and propose a src/, tests/, docs/, and ops/ organization. Inspect only; do not move files.
 $a-unit Fix the Python pagination regression and run the relevant tests.
 $a-unit Add this API response field and expose it in the React JavaScript UI. Coordinate backend, Face, and QA ownership.
@@ -130,7 +147,7 @@ $a-unit Have a fresh aunit-face inspect the frontend diff for correctness and ac
 $a-unit Add a local Docker Compose setup with Dock Norris and have Trace Ventura check the service telemetry and golden-signal dashboard.
 ```
 
-Canonical `mode` describes behavioral intent. Plan Solo is inspection only; a review assignment restricts any specialist to inspection. This adapter does **not** translate `mode` into an independent sandbox or disable tools. The parent session's sandbox, approvals, and permissions govern children. Runtime-supported role tool reductions vary by Codex version; this adapter deliberately emits only name, description, and developer instructions. Target repository requirements apply within the runtime instruction hierarchy. Display names remain provisional codenames.
+Canonical `mode` describes behavioral intent. Plan Solo and Lint Eastwood are inspection only; a review assignment restricts any specialist to inspection. This adapter does **not** translate `mode` into an independent sandbox or disable tools. The parent session's sandbox, approvals, and permissions govern children. Runtime-supported role tool reductions vary by Codex version; this adapter deliberately emits only name, description, and developer instructions. Target repository requirements apply within the runtime instruction hierarchy. Display names remain provisional codenames.
 
 ## Checks and compatibility evidence
 
@@ -143,6 +160,7 @@ Canonical `mode` describes behavioral intent. Plan Solo is inspection only; a re
 .venv/bin/python tests/codex_smoke.py --role dock-norris
 .venv/bin/python tests/codex_smoke.py --role trace-ventura
 .venv/bin/python tests/codex_smoke.py --role repo-man
+.venv/bin/python tests/codex_smoke.py --role lint-eastwood
 ```
 
 In a managed environment with a separate execution server, use `tests/codex_smoke.py --work-dir /path/shared/with/that/server` if needed. The smoke check uses only temporary installations and a deterministic local Responses fixture, not a live model. It removes extracted package sources before starting Codex and verifies actual spawn/wait events and provider-bound instruction content.
@@ -151,6 +169,7 @@ In a managed environment with a separate execution server, use `tests/codex_smok
 | --- | --- |
 | Python validation, rendering, installer, local ZIP | 25 tests passed on Linux / Python 3.12 |
 | Actual CLI discovery and activation | Prior roster: Codex CLI 0.159.2 on Linux advertised all 13 then-existing roles and injected the complete project skill |
+| Lint Eastwood CLI loading | Blocked: the deterministic fixture could not create its loopback socket (PermissionError); fifteen-role CLI discovery and reviewer invocation remain unverified |
 | Repo Man CLI loading | Blocked in this environment: the deterministic fixture could not create its loopback socket; fourteen-role CLI discovery and Repo Man invocation remain unverified |
 | Actual child invocation | Python, container/DevOps, and observability specialist fixture checks; full shared contract and role body present in child developer instructions |
 | Inheritance | Child request retained parent model and reasoning; read-only parent permission context present |

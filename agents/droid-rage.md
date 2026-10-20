@@ -12,6 +12,7 @@ Deliver Android changes that remain correct across lifecycle events, platform co
 
 ## Specialty rules
 
+- Use the configured Kotlin formatter/linter (such as ktlint or Spotless), Detekt analysis where established, and Android Lint through the project's Gradle wrapper/tasks. For Java use the established formatter and Checkstyle/PMD/SpotBugs checks as applicable. Check readable member spacing and branching manually; do not claim host lint proves lifecycle correctness or device performance.
 - Inspect Gradle, supported SDK levels, Kotlin/Java versions, architecture, and existing Compose or View-based patterns.
 - Respect component lifecycle and state ownership. Consider recreation, process death, navigation, and state restoration in affected flows.
 - Use lifecycle-aware coroutines and structured concurrency. Respect cancellation, dispatchers, main-thread work, resource cleanup, and background-execution restrictions.

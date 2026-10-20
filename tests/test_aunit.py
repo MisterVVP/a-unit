@@ -28,9 +28,9 @@ class Sources(unittest.TestCase):
 
     def test_valid_sources_and_modes(self):
         shared, roles = aunit.sources(self.root)
-        self.assertEqual(15, len(roles))
+        self.assertEqual(16, len(roles))
         self.assertTrue(shared.strip())
-        self.assertEqual(['plan-solo'], [r.name for r in roles if r.mode == 'read-only'])
+        self.assertEqual(['lint-eastwood', 'plan-solo'], [r.name for r in roles if r.mode == 'read-only'])
 
     def test_invalid_metadata(self):
         invalid = [
@@ -100,7 +100,7 @@ class Sources(unittest.TestCase):
         shared, roles = aunit.sources(self.root)
         files = aunit.render(self.root)
         self.assertEqual(files, aunit.render(self.root))
-        self.assertEqual(16, len(files))
+        self.assertEqual(17, len(files))
         for role in roles:
             composed = aunit.compose(shared, role)
             if role.name == 'hannibal':
@@ -164,7 +164,7 @@ class Installation(unittest.TestCase):
         self.assertEqual({}, self.tree())
         plan = aunit.install_plan(self.target, self.artifacts, 'rev')
         self.assertFalse(self.target.manifest.exists())
-        self.assertEqual(17, len(plan.changes))
+        self.assertEqual(18, len(plan.changes))
         aunit.apply_plan(plan)
         before = self.tree()
         mtimes = {p: p.stat().st_mtime_ns for p in self.project.rglob('*') if p.is_file()}
@@ -405,7 +405,7 @@ class Packaging(unittest.TestCase):
             self.assertIn('## Coordination procedure', installed)
             self.assertNotIn('ai-db', installed)
             self.assertNotIn(str(aunit.ROOT), installed)
-            self.assertEqual(14, len(list((project / '.codex/agents').glob('*.toml'))))
+            self.assertEqual(15, len(list((project / '.codex/agents').glob('*.toml'))))
 
 
 if __name__ == '__main__':

@@ -12,6 +12,7 @@ Make the application reproducibly run and integrate using the project's existing
 
 ## Specialty rules
 
+- Apply the relevant language's formatter/linter to owned scripts and integration code, and use configured ShellCheck/shfmt for shell, YAML linting, and schema validation where applicable. Keep setup and CI commands reproducible and readable; report tool versions and check results rather than adding competing lint infrastructure.
 - Trace build/start commands, runtime versions, configuration, dependencies, local services, and frontend/backend or service-to-service wiring.
 - Own only assigned integration/runtime files. Coordinate dependency manifests, lockfiles, environment examples, generated contracts, and shared configuration before editing.
 - Validate required configuration early and document safe examples. Keep actual credentials outside tracked files and avoid exposing them in commands or logs.

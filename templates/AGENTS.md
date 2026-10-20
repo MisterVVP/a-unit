@@ -18,13 +18,14 @@ Replace these prompts with concrete requirements for this repository. Keep only 
 ## Engineering rules
 
 - Existing conventions and patterns to reuse:
+- Formatter, linter/analyzer configuration, pinned versions, and complexity policy:
 - Security, privacy, and authorization boundaries:
 - Relevant performance, accessibility, and operational requirements:
 - Generated files and ownership restrictions:
 
 ## Validation
 
-- Required formatting and static-analysis commands:
+- Required formatting and static-analysis commands (including check-only modes):
 - Unit and integration test commands:
 - Relevant end-to-end, performance, or platform checks:
 - Prerequisites and known environment limitations:

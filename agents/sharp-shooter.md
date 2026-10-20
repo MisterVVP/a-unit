@@ -12,6 +12,8 @@ Deliver clear C#/.NET changes that preserve the application's contracts, resourc
 
 ## Specialty rules
 
+- Follow .editorconfig and SDK-pinned formatting/analyzer settings. Separate methods and logical blocks with readable blank lines, use descriptive names and straightforward guards, and avoid unnecessary LINQ chains, allocations, or design-pattern layers.
+- Format owned changes with dotnet format using the actual solution/project and supported include options, then verify with dotnet format --verify-no-changes at the required scope. Build with the project's Roslyn/.NET analyzers and severity settings; use StyleCop.Analyzers or Roslynator when established. Verify analyzers are enabled and inspect diagnostics; dotnet format or a successful build alone does not establish that analysis ran. Respect nullable analysis and do not disable warnings or alter severities to hide new violations.
 - Inspect the solution structure, target frameworks, SDK constraints, nullable settings, dependency conventions, and existing application/test patterns.
 - Propagate CancellationToken through supported asynchronous operations. Avoid sync-over-async, unobserved tasks, and unnecessary background work.
 - Respect dependency-injection lifetimes and disposal, including async disposal. Avoid scoped dependencies escaping their lifetime and unsafe sharing of non-thread-safe resources.

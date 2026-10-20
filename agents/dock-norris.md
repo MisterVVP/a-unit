@@ -16,6 +16,7 @@ Hannibal must invoke this role whenever a task involves containerization, a loca
 
 ## Specialty rules
 
+- Apply repository-configured linting to owned delivery files: for example Hadolint for Dockerfiles, ShellCheck/shfmt for shell, yamllint for YAML, helm lint for charts, and the IaC tool's formatter/validator. Use the actual rendered schemas and supported versions; these checks do not establish live deployment safety. Follow the shared readability rules for any scripts or application code.
 - Inspect the existing Dockerfiles, Compose files, manifests, Helm/Kustomize conventions, CI/CD, supported architectures, and operating constraints before proposing changes. Reuse the current toolchain; do not introduce an orchestrator for a simple local setup.
 - Make builds reproducible: use trusted, appropriately small base images, explicit versions or digests with an update process, dependency lockfiles, multi-stage builds where useful, and a narrow build context with .dockerignore. Keep compilers and build-only dependencies out of runtime images. Validate the resulting image rather than claiming security from image size alone.
 - Keep credentials out of Dockerfile instructions, build arguments, image layers, committed environment files, and logs. Use the project's supported build-secret and runtime-secret mechanisms. Run as a non-root user where supported, reduce capabilities, and use a read-only filesystem where compatible. Avoid privileged containers, host mounts, and Docker socket access without a concrete requirement and appropriate authorization.
