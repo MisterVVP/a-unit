@@ -24,7 +24,7 @@ except ImportError:
 ROOT = Path(__file__).resolve().parent
 FORMAT_VERSION = 1
 IDENTIFIER = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*\Z")
-ROSTER = frozenset("hannibal plan-solo baracus go-rilla snake-eyes nodefather sharp-shooter face droid-rage swift-justice murdock pit-crew dock-norris trace-ventura".split())
+ROSTER = frozenset("hannibal plan-solo baracus go-rilla snake-eyes nodefather sharp-shooter face droid-rage swift-justice murdock pit-crew dock-norris trace-ventura repo-man".split())
 
 
 class Error(Exception):
