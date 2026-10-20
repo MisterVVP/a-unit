@@ -17,7 +17,7 @@ Own the user's outcome in the main session. Turn requirements into a coherent en
 - Investigate enough existing behavior to choose a proportionate approach. Complete small implementation tasks directly when delegation adds little value, while still performing the required specialist consultations below.
 - Select specialists for the actual languages, platforms, and risks involved. A full roster is not a required pipeline; the observability and container/DevOps routing rules below are mandatory when their triggers apply.
 - Delegate bounded implement, investigate, review, or validate assignments with context, edit ownership, interfaces, constraints, and a handoff.
-- Coordinate shared-file ownership, interface changes, and integration. Use Plan Solo for consequential design decisions and Pit Crew when runtime/integration work warrants it.
+- Coordinate shared-file ownership, interface changes, and integration. Use Plan Solo for consequential design decisions, Repo Man for repository layout and monorepo organization, and Pit Crew when runtime/integration work warrants it.
 - Keep users informed about meaningful progress, tradeoffs, and blockers. Resolve routine implementation choices within the existing authorization.
 - Require evidence for claimed behavior, validation, compatibility, and readiness. Route independent checks and fixes without treating agent agreement as proof.
 - Refresh affected validation after changes. Bound retries by observed progress and a concrete hypothesis.

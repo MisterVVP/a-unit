@@ -2,7 +2,7 @@
 
 **No Gods. No Masters. Just Agents.**
 
-A portable engineering squad: Hannibal coordinates your main Codex CLI session and calls thirteen focused specialist agents. Each installed definition contains the complete shared engineering contract and its role instructions. No source checkout or private documentation is needed at runtime.
+A portable engineering squad: Hannibal coordinates your main Codex CLI session and calls fourteen focused specialist agents. Each installed definition contains the complete shared engineering contract and its role instructions. No source checkout or private documentation is needed at runtime.
 
 **Status: local Codex CLI packaging preview.** The Python installer and automated checks are implemented. Adapter wiring was exercised on Linux with Codex CLI **0.159.2**, using an offline deterministic Responses fixture. Live-model engineering quality and macOS/Windows runtime behavior have not been evaluated. GitHub Packages and other runtime adapters are deferred.
 
@@ -53,7 +53,7 @@ Paths with spaces work when quoted. The working directory never implicitly selec
 
 | Artifact | User scope | Project scope |
 | --- | --- | --- |
-| Thirteen agent TOMLs | `$CODEX_HOME/agents/aunit-*.toml` (default `~/.codex/agents`) | `<project>/.codex/agents/aunit-*.toml` |
+| Fourteen agent TOMLs | `$CODEX_HOME/agents/aunit-*.toml` (default `~/.codex/agents`) | `<project>/.codex/agents/aunit-*.toml` |
 | Hannibal activation skill | `~/.agents/skills/a-unit/` | `<project>/.agents/skills/a-unit/` |
 | Ownership manifest | `$CODEX_HOME/a-unit-manifest.json` | `<project>/.codex/a-unit-manifest.json` |
 
@@ -97,6 +97,7 @@ Writes use atomic per-file replacement with recoverable backups. An ordinary wri
 | Agent | Specialty | Definition / installed role |
 | --- | --- | --- |
 | Hannibal | Main-session commander | [hannibal](agents/hannibal.md), via `$a-unit` |
+| Repo Man | Repository layout and monorepo organization | [repo-man](agents/repo-man.md), `aunit-repo-man` |
 | Plan Solo | System design, inspection only | [plan-solo](agents/plan-solo.md), `aunit-plan-solo` |
 | B.A. Barac++ | Backend C++ | [baracus](agents/baracus.md), `aunit-baracus` |
 | Go-rilla | Backend Go | [go-rilla](agents/go-rilla.md), `aunit-go-rilla` |
@@ -111,6 +112,8 @@ Writes use atomic per-file replacement with recoverable backups. An ordinary wri
 | Dock Norris | Docker, Kubernetes, and DevOps delivery | [dock-norris](agents/dock-norris.md), `aunit-dock-norris` |
 | Trace Ventura | Observability, golden signals, and SLI/SLOs | [trace-ventura](agents/trace-ventura.md), `aunit-trace-ventura` |
 
+Repo Man organizes application and library source under `src/` (including Go), tests under `tests/`, documentation under `docs/`, and IaC, Helm charts, and observability configuration under `ops/`. Its default monorepo layout uses `src/apps/<app>/` and `src/libs/<library>/`, with no application code at the repository root. It checks tool constraints and migration paths with the domain owners; existing project requirements take precedence. Use `aunit-repo-man` for layout design, implementation, or inspection-only reviews.
+
 Each specialist supports bounded implement, investigate, or review assignments as appropriate. Model and reasoning selection inherit from the session. A fresh domain reviewer should receive the requirements, baseline/diff, edit restrictions, and evidence rather than relying on the author's summary.
 
 Trace Ventura reuses existing telemetry and checks metrics, structured logs, distributed traces, and applicable dashboards. For services, it covers latency, traffic, errors, saturation, a clearly defined availability/uptime signal, and SLI/SLO views with targets, error budgets, and missing-data behavior. It distinguishes process uptime and scrape health from service availability. SLO targets follow project policy or remain explicitly proposed until agreed. Code without a running service still gets an observability consultation, with evidence for inapplicable signals instead of unnecessary monitoring infrastructure.
@@ -120,6 +123,7 @@ Dock Norris covers reproducible images, secure Docker/Compose setups, Kubernetes
 Examples:
 
 ```text
+$a-unit Have aunit-repo-man review our monorepo layout and propose a src/, tests/, docs/, and ops/ organization. Inspect only; do not move files.
 $a-unit Fix the Python pagination regression and run the relevant tests.
 $a-unit Add this API response field and expose it in the React JavaScript UI. Coordinate backend, Face, and QA ownership.
 $a-unit Have a fresh aunit-face inspect the frontend diff for correctness and accessibility. Review only; do not edit.
@@ -135,9 +139,10 @@ Canonical `mode` describes behavioral intent. Plan Solo is inspection only; a re
 .venv/bin/python -m unittest discover -s tests -v
 # Optional: installed Codex + permission to bind a loopback port; no API key.
 .venv/bin/python tests/codex_smoke.py
-# Check either new specialist's actual loading and invocation with the same fixture.
+# Check a specialist's actual loading and invocation with the same fixture.
 .venv/bin/python tests/codex_smoke.py --role dock-norris
 .venv/bin/python tests/codex_smoke.py --role trace-ventura
+.venv/bin/python tests/codex_smoke.py --role repo-man
 ```
 
 In a managed environment with a separate execution server, use `tests/codex_smoke.py --work-dir /path/shared/with/that/server` if needed. The smoke check uses only temporary installations and a deterministic local Responses fixture, not a live model. It removes extracted package sources before starting Codex and verifies actual spawn/wait events and provider-bound instruction content.
@@ -145,7 +150,8 @@ In a managed environment with a separate execution server, use `tests/codex_smok
 | Check | Evidence in this implementation |
 | --- | --- |
 | Python validation, rendering, installer, local ZIP | 25 tests passed on Linux / Python 3.12 |
-| Actual CLI discovery and activation | Codex CLI 0.159.2 on Linux: all 13 roles advertised, complete project skill injected explicitly |
+| Actual CLI discovery and activation | Prior roster: Codex CLI 0.159.2 on Linux advertised all 13 then-existing roles and injected the complete project skill |
+| Repo Man CLI loading | Blocked in this environment: the deterministic fixture could not create its loopback socket; fourteen-role CLI discovery and Repo Man invocation remain unverified |
 | Actual child invocation | Python, container/DevOps, and observability specialist fixture checks; full shared contract and role body present in child developer instructions |
 | Inheritance | Child request retained parent model and reasoning; read-only parent permission context present |
 | Scope behavior | Project-over-user role precedence and custom `CODEX_HOME` exercised; duplicate skill names made bare `$a-unit` ambiguous |
