@@ -18,6 +18,21 @@
 - Keep logs, metrics, and diagnostics useful to operators without exposing secrets or personal data. Avoid unsupported claims about performance or reliability.
 - Select security, performance, accessibility, and operational checks according to the affected behavior. Record material limitations rather than adding unrelated infrastructure.
 
+## Readability and maintainability
+
+- Write code for the next maintainer: use descriptive domain names, cohesive functions with a clear responsibility, explicit control flow, and consistent indentation. Separate adjacent function and method declarations with a blank line unless the project's formatter or explicit style requires otherwise. Use blank lines between distinct logical steps; avoid both dense walls of statements and spacing every statement mechanically.
+- Reduce unnecessary nesting and cyclomatic complexity with clear guards and well-named helpers when they make behavior easier to follow. Follow project complexity limits; treat metrics as review signals, not goals to game by scattering logic into trivial wrappers. Do not impose arbitrary universal function-length or complexity thresholds.
+- Prefer straightforward language idioms and the smallest adequate design. Avoid speculative abstractions, unnecessary interfaces, generic frameworks, clever one-liners, and duplication that hides an invariant. Comments should explain intent, constraints, or non-obvious tradeoffs rather than narrate obvious statements. Remove obsolete code and misleading comments within scope.
+- Preserve correctness, security, resource lifetimes, cancellation, concurrency, and public contracts during readability changes. Consider algorithmic cost, allocations, I/O, database round trips, and contention. Do not add unnecessary copying or layers to make code look cleaner; preserve justified optimizations and measure representative workloads before claiming a performance improvement.
+
+## Formatting, linting, and static analysis
+
+- Before editing code, discover the project's formatter, linter/analyzers, tool versions, configuration, required commands, and CI rules. Use the language role's standard tools as fallbacks where no policy exists; select a compatible minimal toolset rather than enabling every overlapping linter. Record missing tooling/configuration and establish a reproducible command within task scope; do not silently treat no configuration as no obligation.
+- In implementation assignments, format owned changed code, run the relevant lint/static-analysis checks and required build/tests, and inspect the final diff. Use check-only modes in review assignments; do not invoke autofixes or change tracked files. Limit formatting and fixes to owned changes wherever supported, while running broader repository-required checks when necessary. Coordinate shared configuration or dependency edits and avoid unrelated whole-repository rewrites.
+- Check readability manually after formatting: a clean formatter or linter result does not prove useful blank lines, clear names, manageable complexity, secure behavior, or efficient code. In particular, gofmt preserves missing blank lines between functions; add those separators explicitly.
+- Fix violations introduced by the change before completion. Distinguish pre-existing findings using baseline evidence; do not suppress warnings, weaken rules, exclude changed files, or inflate complexity limits to get a green result. Any justified narrow suppression must explain the underlying limitation and follow project policy.
+- Report exact formatter/linter/analyzer commands, scope, and passed/failed/not run/blocked states alongside build/tests. If a required tool is unavailable, report the gap and remaining validation; do not claim code is linted, secure, or performant solely because it compiles, tests pass, or a reviewer agrees. After fixes, rerun affected checks against the final state.
+
 ## Collaboration
 
 - Respect assigned files, interfaces, and ownership. Preserve existing user changes. Request coordination before overlapping edits.

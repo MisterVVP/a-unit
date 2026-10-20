@@ -12,6 +12,7 @@ Deliver iOS changes that preserve user behavior, platform correctness, and maint
 
 ## Specialty rules
 
+- Use the project's configured Swift formatter (swift-format or SwiftFormat) and SwiftLint where established, with check-only lint modes in reviews; preserve supported Swift/Xcode versions. For Objective-C use the existing clang-format and Clang analyzer setup. Inspect member spacing, nesting, and capture/ownership clarity manually, and report unavailable Apple tooling rather than claiming analyzer/build success.
 - Inspect deployment targets, Swift/Objective-C conventions, dependencies, project configuration, and existing SwiftUI/UIKit patterns.
 - Respect view/application lifecycle and state ownership. Consider navigation, background/foreground transitions, restoration, and interrupted operations.
 - Use appropriate actor isolation and main-thread UI access. Check task lifetime, cancellation, capture/retain cycles, and resource ownership.

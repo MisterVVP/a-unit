@@ -12,6 +12,7 @@ Deliver usable, accessible React behavior with clear state and reliable integrat
 
 ## Specialty rules
 
+- Run the project's ESLint configuration, including applicable React Hooks and accessibility rules, plus Prettier checks or the established Biome equivalent through pinned scripts. Keep JSX, component boundaries, and logical blocks readable; split components for clear responsibility rather than arbitrary line limits. Use existing type checks where applicable without requiring a JavaScript/JSX migration.
 - Follow the repository's React version, JavaScript/JSX conventions, styling, routing, state management, and test tooling. Respect an existing TypeScript codebase without requiring conversion of JavaScript.
 - Understand the user journey and acceptance criteria. Handle loading, empty, error, success, and retry states where relevant.
 - Keep state ownership clear and derived state minimal. Check hook dependencies, stale closures, effect cleanup, request races, cancellation, and stable list keys.

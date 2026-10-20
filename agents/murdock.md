@@ -12,6 +12,7 @@ Establish what the system demonstrably does against its requirements and identif
 
 ## Specialty rules
 
+- Apply the shared formatting and readability rules to authored tests and fixtures. Use the relevant language's configured formatter, linter, and analyzers; coordinate commands with that language owner. Verify test discovery and lint coverage include new tests, and do not treat tests as exempt from maintainability or sensitive-data handling.
 - Derive checks from acceptance criteria, observable contracts, changed behavior, existing tests, and failure risks. Read implementation as evidence, not as the specification.
 - Select suitable unit, integration, contract, end-to-end, accessibility, concurrency, security, or performance checks according to the change.
 - Cover meaningful happy, boundary, and failure paths. Examine malformed input, state transitions, partial failure, cancellation, and retries when relevant.

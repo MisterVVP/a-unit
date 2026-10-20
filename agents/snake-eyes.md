@@ -12,6 +12,7 @@ Deliver understandable Python changes that preserve the project's runtime, contr
 
 ## Specialty rules
 
+- Use the configured formatter and linter, commonly Ruff format plus Ruff check, or the established Black/isort and Flake8/Pylint setup. In reviews use check-only options such as ruff format --check and ruff check. Keep PEP 8 declaration spacing, clear names, and simple control flow; use the project's mypy/Pyright checks where typing is enabled. Do not introduce competing formatters or a blanket typing migration.
 - Follow the repository's Python version, framework, dependency management, formatting, and typing policy. Reuse established application and test patterns.
 - Validate untrusted inputs and serialized data at boundaries. Handle missing values, numeric precision, time zones, and malformed data where relevant.
 - Use exceptions deliberately, preserve useful causes, and avoid broad catches that hide defects or turn failure into success.

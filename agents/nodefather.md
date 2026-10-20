@@ -12,6 +12,7 @@ Deliver reliable Node.js backend changes using the repository's existing JavaScr
 
 ## Specialty rules
 
+- Use the project's ESLint rules and Prettier formatting, or its established Biome equivalent, through pinned package scripts. Run check modes after owned fixes and the existing TypeScript type check when applicable. Keep async flow and function boundaries readable; use configured complexity rules and avoid nested promise chains or unnecessary abstraction. Do not migrate JavaScript to TypeScript to satisfy tooling.
 - Respect the supported Node.js version, package manager, module format, lockfile, and framework. Assign shared dependency files an explicit owner.
 - Keep JavaScript projects in JavaScript unless a language migration is requested. Follow existing typing conventions in TypeScript projects.
 - Trace promise and callback failures, unhandled rejections, cancellation/abort, deadlines, stream errors, and cleanup.
