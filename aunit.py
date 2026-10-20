@@ -24,7 +24,7 @@ except ImportError:
 ROOT = Path(__file__).resolve().parent
 FORMAT_VERSION = 1
 IDENTIFIER = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*\Z")
-ROSTER = frozenset("hannibal plan-solo baracus go-rilla snake-eyes nodefather sharp-shooter face droid-rage swift-justice murdock pit-crew".split())
+ROSTER = frozenset("hannibal plan-solo baracus go-rilla snake-eyes nodefather sharp-shooter face droid-rage swift-justice murdock pit-crew dock-norris trace-ventura".split())
 
 
 class Error(Exception):
@@ -414,7 +414,7 @@ def main(argv=None) -> int:
             if output.exists():
                 raise Error(f"Render output must be a new directory: {output}")
             apply_plan(Plan({output / key: value for key, value in artifacts.items()}, []))
-            print(f"Rendered: 11 subagents and 1 activation skill in {output}")
+            print(f"Rendered: {len(ROSTER) - 1} subagents and 1 activation skill in {output}")
         else:
             target = layout(args.project, args.user)
             plan = (install_plan(target, render(), revision()) if args.command == "install"

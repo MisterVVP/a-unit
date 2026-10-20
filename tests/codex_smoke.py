@@ -32,7 +32,7 @@ def tool(name, arguments, call_id):
             "name": name, "namespace": "multi_agent_v1", "arguments": json.dumps(arguments)}
 
 
-def run(work_dir=None):
+def run(work_dir=None, role="snake-eyes"):
     executable = shutil.which("codex")
     if not executable:
         raise RuntimeError("codex is required for this optional smoke check")
@@ -53,7 +53,7 @@ def run(work_dir=None):
                         "--project", str(project), "--apply"], check=True, capture_output=True)
         shutil.rmtree(root / "extracted")
         target = aunit.layout(project, False)
-        role_path = target.destination("agents/aunit-snake-eyes.toml")
+        role_path = target.destination(f"agents/aunit-{role}.toml")
         original_role = role_path.read_text()
         import tomllib
         project_instructions = tomllib.loads(original_role)["developer_instructions"]
@@ -62,8 +62,8 @@ def run(work_dir=None):
         codex_home = root / "custom-codex-home"
         (codex_home / "agents").mkdir(parents=True)
         # Same role name in user and project scopes verifies native role precedence.
-        (codex_home / "agents/aunit-snake-eyes.toml").write_text(
-            'name = "aunit-snake-eyes"\ndescription = "USER_SCOPE_FIXTURE"\n'
+        (codex_home / f"agents/aunit-{role}.toml").write_text(
+            f'name = "aunit-{role}"\ndescription = "USER_SCOPE_FIXTURE"\n'
             'developer_instructions = "USER_SCOPE_INSTRUCTIONS"\n', encoding="utf-8")
         # Later introduce a competing skill via the supported legacy user root.
         # This avoids writing to the real ~/.agents/skills directory.
@@ -80,15 +80,15 @@ def run(work_dir=None):
                 try:
                     data = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                     requests.append((phase, data))
-                    serialized = json.dumps(data["input"], ensure_ascii=False)
                     if phase != "project":
                         item = message("USER_DONE")
-                    elif "# Snake Eyes" in serialized:
+                    elif any(project_instructions in c.get("text", "") for x in data["input"]
+                             if x.get("role") == "developer" for c in x.get("content", [])):
                         item = message("SPECIALIST_DONE")
                     else:
                         outputs = [x for x in data["input"] if x.get("type") == "function_call_output"]
                         if not outputs:
-                            item = tool("spawn_agent", {"agent_type": "aunit-snake-eyes", "fork_context": False,
+                            item = tool("spawn_agent", {"agent_type": f"aunit-{role}", "fork_context": False,
                                         "message": "Review example.py without edits. Return a concise finding."}, "spawn")
                         elif len(outputs) == 1:
                             spawned = json.loads(outputs[0]["output"])
@@ -146,7 +146,7 @@ trust_level = "trusted"
             return [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
 
         try:
-            events = execute("$a-unit Review example.py using aunit-snake-eyes. Inspect only; do not edit files.")
+            events = execute(f"$a-unit Review example.py using aunit-{role}. Inspect only; do not edit files.")
             project_requests = [d for p, d in requests if p == "project"]
             main = project_requests[0]
             # The runtime, not the fixture, resolves and injects the explicit skill.
@@ -158,7 +158,9 @@ trust_level = "trusted"
             assert all(f"aunit-{name}" in tool_text for name in aunit.ROSTER - {"hannibal"})
             assert "aunit-hannibal" not in tool_text
             assert "USER_SCOPE_FIXTURE" not in tool_text
-            children = [d for d in project_requests if "# Snake Eyes" in json.dumps(d["input"])]
+            children = [d for d in project_requests if any(
+                project_instructions in c.get("text", "") for x in d["input"] if x.get("role") == "developer"
+                for c in x.get("content", []))]
             assert len(children) == 1, "Expected one real specialist request"
             child = children[0]
             child_developer_text = "\n".join(c.get("text", "") for x in child["input"] if x.get("role") == "developer"
@@ -177,7 +179,7 @@ trust_level = "trusted"
             # CODEX_HOME without editing config.toml to declare an agent table.
             role_path.unlink()
             phase = "user"
-            execute("Report the available Python review role. Do not use any tools.")
+            execute(f"Report the available aunit-{role} role. Do not use any tools.")
             user = [d for p, d in requests if p == "user"][0]
             assert "USER_SCOPE_FIXTURE" in json.dumps(user["tools"])
             fallback.write_text('---\nname: a-unit\ndescription: User fixture\n---\nUSER_SKILL_FIXTURE\n')
@@ -191,7 +193,7 @@ trust_level = "trusted"
             server.server_close()
             thread.join(timeout=5)
         print(f"PASS: {version}; {sys.platform}; local deterministic Responses fixture")
-        print("Project skill activation, all 11 roles discovered, specialist spawn/wait, complete bundled instructions,")
+        print(f"Project skill activation, all {len(aunit.ROSTER) - 1} roles discovered, {role} spawn/wait, complete bundled instructions,")
         print("model/reasoning inheritance, read-only parent context, project-over-user role precedence, duplicate-skill ambiguity, custom CODEX_HOME,")
         print("unchanged target files, and execution after extracted package source removal.")
         print("Not tested: live-model judgment, tool-level permission enforcement, preferred user skill root, or domain engineering quality.")
@@ -200,4 +202,7 @@ trust_level = "trusted"
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work-dir", type=Path, help="Existing temporary root shared with a remote execution server, if used")
-    run(parser.parse_args().work_dir)
+    parser.add_argument("--role", choices=sorted(aunit.ROSTER - {"hannibal"}), default="snake-eyes",
+                        help="Specialist whose actual instruction delivery and spawn/wait are checked")
+    args = parser.parse_args()
+    run(args.work_dir, args.role)
