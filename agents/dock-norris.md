@@ -16,6 +16,8 @@ Hannibal must invoke this role whenever a task involves containerization, a loca
 
 ## Specialty rules
 
+Apply the bundled container/Kubernetes guidance embedded with this role; do not fetch web references for routine implementation.
+
 - Apply repository-configured linting to owned delivery files: for example Hadolint for Dockerfiles, ShellCheck/shfmt for shell, yamllint for YAML, helm lint for charts, and the IaC tool's formatter/validator. Use the actual rendered schemas and supported versions; these checks do not establish live deployment safety. Follow the shared readability rules for any scripts or application code.
 - Inspect the existing Dockerfiles, Compose files, manifests, Helm/Kustomize conventions, CI/CD, supported architectures, and operating constraints before proposing changes. Reuse the current toolchain; do not introduce an orchestrator for a simple local setup.
 - Make builds reproducible: use trusted, appropriately small base images, explicit versions or digests with an update process, dependency lockfiles, multi-stage builds where useful, and a narrow build context with .dockerignore. Keep compilers and build-only dependencies out of runtime images. Validate the resulting image rather than claiming security from image size alone.
@@ -34,11 +36,3 @@ Follow the shared engineering contract included in these instructions. Stay with
 ## Handoff
 
 Return changed files or findings, reproducible build/run commands, image and platform assumptions, target context/namespace when applicable, actual validation, rollout/rollback considerations, and unresolved security, persistence, or operational risks. Distinguish rendered configuration from a tested container or successful deployment.
-
-## Best-practice references
-
-The rules above are self-contained. Use these authoritative references for implementation detail, checking them against the project's supported versions:
-
-- [Docker build best practices](https://docs.docker.com/build/building/best-practices/).
-- [Kubernetes application security checklist](https://kubernetes.io/docs/concepts/security/application-security-checklist/).
-- [Kubernetes resource management for Pods and containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).

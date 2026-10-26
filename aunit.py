@@ -24,6 +24,8 @@ except ImportError:
 ROOT = Path(__file__).resolve().parent
 FORMAT_VERSION = 1
 IDENTIFIER = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*\Z")
+KNOWLEDGE_BY_ROLE = {"face": "react.md", "dock-norris": "containers-kubernetes.md", "trace-ventura": "observability.md"}
+KNOWLEDGE_DIR = "agents/_shared/knowledge"
 ROSTER = frozenset("hannibal plan-solo baracus go-rilla snake-eyes nodefather sharp-shooter face droid-rage swift-justice murdock pit-crew dock-norris trace-ventura repo-man lint-eastwood".split())
 
 
@@ -100,19 +102,25 @@ def sources(root: Path = ROOT) -> tuple[str, list[Role]]:
     return contract, roles
 
 
-def compose(contract: str, role: Role) -> str:
-    """Vendor-neutral, lossless shared-contract + role-body composition."""
-    return contract + "\n\n" + role.body
+def compose(contract: str, role: Role, root: Path = ROOT) -> str:
+    """Embed approved offline guidance in the installed instructions."""
+    result = contract + "\n\n" + role.body
+    reference = KNOWLEDGE_BY_ROLE.get(role.name)
+    if reference:
+        result += "\n\n## Bundled offline guidance\n\n" + text_file(root / KNOWLEDGE_DIR / reference)
+    return result
 
 
 def render(root: Path = ROOT) -> dict[str, bytes]:
     contract, roles = sources(root)
     artifacts = {}
+    for reference in sorted(set(KNOWLEDGE_BY_ROLE.values())):
+        artifacts[f"skills/a-unit/references/{reference}"] = text_file(root / KNOWLEDGE_DIR / reference).encode("utf-8")
     for role in roles:
         if role.name == "hannibal":
             continue
         fields = {"name": f"aunit-{role.name}", "description": role.description,
-                  "developer_instructions": compose(contract, role)}
+                  "developer_instructions": compose(contract, role, root)}
         # JSON basic strings are valid TOML basic strings; ensure_ascii=False avoids
         # JSON surrogate escapes, which TOML does not allow for non-BMP characters.
         content = "".join(f"{key} = {json.dumps(value, ensure_ascii=False)}\n" for key, value in fields.items())
@@ -130,7 +138,7 @@ def render(root: Path = ROOT) -> dict[str, bytes]:
         "runtime permissions come from the parent session.\n\n"
     )
     routing += "\n".join(f"- `aunit-{r.name}`: {r.description} Default intent: {r.mode}." for r in roles if r.name != "hannibal") + "\n"
-    artifacts["skills/a-unit/SKILL.md"] = (header + compose(contract, commander) + routing).encode("utf-8")
+    artifacts["skills/a-unit/SKILL.md"] = (header + compose(contract, commander, root) + routing).encode("utf-8")
     artifacts["skills/a-unit/agents/openai.yaml"] = b"policy:\n  allow_implicit_invocation: false\n"
     return artifacts
 
@@ -163,7 +171,7 @@ class Layout:
     def destination(self, key: str) -> Path:
         if re.fullmatch(r"agents/aunit-[a-z][a-z0-9]*(?:-[a-z0-9]+)*\.toml", key):
             return self.codex / key
-        if key in {"skills/a-unit/SKILL.md", "skills/a-unit/agents/openai.yaml"}:
+        if key in {"skills/a-unit/SKILL.md", "skills/a-unit/agents/openai.yaml"} or (key.startswith("skills/a-unit/references/") and key.removeprefix("skills/a-unit/references/") in KNOWLEDGE_BY_ROLE.values()):
             return self.skills / key.removeprefix("skills/")
         raise Error(f"Unsafe or unsupported managed path: {key!r}")
 
@@ -366,6 +374,7 @@ def package(path: Path, root: Path = ROOT) -> None:
     files = [root / "aunit.py", root / "requirements.txt", root / "README.md", root / "LICENSE",
              root / "templates/AGENTS.md", root / "agents/_shared/engineering-contract.md"]
     files += sorted((root / "agents").glob("*.md"))
+    files += sorted((root / KNOWLEDGE_DIR).glob("*.md"))
     payload = {str(p.relative_to(root)): p.read_bytes() for p in files}
     payload["SOURCE_REVISION"] = ((revision(root) or "unknown") + "\n").encode()
     safe_path(path)
