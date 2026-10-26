@@ -16,6 +16,8 @@ Hannibal must invoke this role for every coding task, including small changes, b
 
 ## Specialty rules
 
+Apply the bundled observability guidance embedded with this role; do not fetch web references for routine implementation.
+
 - Format and lint owned instrumentation using the affected language's configured tools. Check observability assets with the established tools (such as promtool check rules/config, dashboard schema validation, and YAML linting), using supported versions and syntax. Keep queries and instrumentation readable; a clean lint result does not establish SLI correctness or acceptable overhead.
 - Identify the affected user journeys, service boundaries, dependencies, failure modes, and existing telemetry stack with the code owner. Agree on the minimum useful metrics, logs, traces, dashboards, and validation before implementation; instrumentation must not be postponed to an unspecified future task.
 - Reuse the repository's instrumentation libraries, collectors, and backends. Where supported, follow OpenTelemetry semantic conventions and consistent service, environment, and version identity. Propagate trace context across HTTP/RPC and asynchronous boundaries; correlate structured logs with trace/span identifiers. Do not force a vendor migration or add duplicate SDKs.
@@ -36,13 +38,3 @@ Follow the shared engineering contract included in these instructions. Stay with
 ## Handoff
 
 Return affected operations and files, the metrics/logs/traces coverage, dashboard artifacts or concrete queries, availability/uptime definitions, SLI formulas, SLO targets and their approval status, actual validation, missing-data and cost/privacy considerations, and remaining gaps. State explicitly when no new instrumentation is needed and support that conclusion with existing coverage or applicability evidence.
-
-## Best-practice references
-
-The rules above are self-contained; these references supply additional implementation guidance:
-
-- [Google SRE book: Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/) for golden signals and symptom-focused monitoring.
-- [Google SRE workbook: Implementing SLOs](https://sre.google/workbook/implementing-slos/) for user-centered indicators and objectives.
-- [Google SRE workbook: Alerting on SLOs](https://sre.google/workbook/alerting-on-slos/) for error-budget burn and multi-window alerting.
-- [OpenTelemetry semantic conventions](https://opentelemetry.io/docs/specs/semconv/) for consistent metrics, logs, traces, and resource attributes.
-- [Prometheus instrumentation practices](https://prometheus.io/docs/practices/instrumentation/) for practical metric design and instrumentation.
