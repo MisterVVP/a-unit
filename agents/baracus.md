@@ -12,14 +12,17 @@ Deliver correct, maintainable C++ changes that fit the repository's language lev
 
 ## Specialty rules
 
-- Use the project's compatible clang-format configuration for owned C++ changes and check formatting (for example, clang-format --dry-run --Werror on selected files when supported). Run clang-tidy with the real compilation database/compile flags and configured checks; retain compiler warnings and existing sanitizers. Do not substitute formatting for static analysis or run clang-tidy with guessed include paths. Follow the shared readability rules for declaration spacing, ownership, and control-flow complexity.
-- Inspect existing ownership, error-handling, and threading conventions before changing them. Use RAII and explicit lifetime relationships.
-- Check undefined behavior, dangling references/views, iterator invalidation, bounds, numeric conversions, and exception safety where affected.
-- Make thread ownership and synchronization clear. Avoid races, lock-order hazards, and resource leaks; respect cancellation and shutdown paths.
-- Preserve public API and ABI obligations where applicable. Consider serialization compatibility, header dependencies, linkage, and supported compilers/platforms.
-- Reuse established build targets, dependency management, and test frameworks. Avoid introducing templates, wrappers, or generic layers without a concrete benefit.
-- Assess allocations, copying, I/O, and algorithmic cost in the changed path. Use measurements for optimization claims.
-- Run the relevant repository build and tests. Use existing sanitizer, static-analysis, formatting, and performance checks when applicable and available.
+- Follow the target project's C++ standard and conventions. Prefer modern standard-library facilities (C++20+ when supported) over third-party wrappers. Keep headers self-contained and include only what they use.
+- Favor value semantics and RAII. Use `std::unique_ptr` for exclusive ownership and `std::shared_ptr` only when shared lifetime is necessary. Follow the Rule of Zero/Five when managing resources or special member functions.
+- Make interfaces hard to misuse: use `explicit`, `override`, const-correctness, `enum class`, and meaningful `constexpr`/`noexcept`. Prefer composition, focused functions, and the simplest correct solution over speculative abstractions. Respect configured cognitive-complexity limits, including in tests.
+- Validate untrusted inputs at boundaries and follow the project's structured error conventions. Check for undefined behavior, dangling references/views, iterator invalidation, narrowing, bounds errors, and exception-safety risks.
+- Prefer `std::string_view` for non-owning read-only string parameters. Do not build multi-part strings using repeated `operator+` chains; use `std::string` with `reserve`/`append` (or a stream for complex formatting). Prefer named `constexpr` constants over magic protocol strings or repeated, non-obvious literals.
+- Make thread ownership, synchronization, cancellation, and shutdown paths clear. Minimize shared mutable state, avoid races and lock-order hazards, and document threading contracts.
+- Preserve public API/ABI and serialization compatibility where applicable; check header dependencies, linkage, and supported compilers/platforms.
+- Keep hot paths efficient: avoid unnecessary allocations and copies, pre-size buffers when possible, and prefer single-pass algorithms over repeated scans. Benchmark or profile before making optimization claims.
+- Follow existing source extensions and formatting; for new projects prefer `.cpp` implementations and `.h` headers. Keep short declarations on one line when allowed by the project's formatter.
+- Format with the project's clang-format configuration and run configured clang-tidy using the real compilation database/flags. Do not guess include paths or suppress findings without documented justification. Address new warnings and run relevant build, tests, and available sanitizer checks.
+- Add or update deterministic tests for behavior changes, covering normal, edge, and failure cases; use integration tests when components interact. Reuse the project's testing tools and keep diffs small and reviewable.
 
 ## Boundaries
 
