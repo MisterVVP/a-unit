@@ -100,9 +100,9 @@ class Sources(unittest.TestCase):
         shared, roles = aunit.sources(self.root)
         files = aunit.render(self.root)
         self.assertEqual(files, aunit.render(self.root))
-        self.assertEqual(17, len(files))
+        self.assertEqual(20, len(files))
         for role in roles:
-            composed = aunit.compose(shared, role)
+            composed = aunit.compose(shared, role, self.root)
             if role.name == 'hannibal':
                 content = files['skills/a-unit/SKILL.md'].decode()
                 self.assertIn(composed, content)
@@ -117,6 +117,19 @@ class Sources(unittest.TestCase):
         self.assertNotIn('agents/aunit-hannibal.toml', files)
         policy = aunit.yaml.safe_load(files['skills/a-unit/agents/openai.yaml'])
         self.assertIs(False, policy['policy']['allow_implicit_invocation'])
+
+
+    def test_offline_guidance_is_embedded_and_installed(self):
+        artifacts = aunit.render(self.root)
+        for role, reference in aunit.KNOWLEDGE_BY_ROLE.items():
+            guide = (self.root / aunit.KNOWLEDGE_DIR / reference).read_text()
+            rendered = tomllib.loads(artifacts[f'agents/aunit-{role}.toml'].decode())
+            self.assertIn(guide, rendered['developer_instructions'])
+            self.assertNotIn('https://', rendered['developer_instructions'])
+            self.assertEqual(guide.encode(), artifacts[f'skills/a-unit/references/{reference}'])
+        with self.assertRaises(aunit.Error):
+            (self.root / aunit.KNOWLEDGE_DIR / 'react.md').unlink()
+            aunit.render(self.root)
 
     def test_crlf_checkout_produces_same_output(self):
         before = aunit.render(self.root)
@@ -164,7 +177,7 @@ class Installation(unittest.TestCase):
         self.assertEqual({}, self.tree())
         plan = aunit.install_plan(self.target, self.artifacts, 'rev')
         self.assertFalse(self.target.manifest.exists())
-        self.assertEqual(18, len(plan.changes))
+        self.assertEqual(21, len(plan.changes))
         aunit.apply_plan(plan)
         before = self.tree()
         mtimes = {p: p.stat().st_mtime_ns for p in self.project.rglob('*') if p.is_file()}
@@ -406,6 +419,7 @@ class Packaging(unittest.TestCase):
             self.assertNotIn('ai-db', installed)
             self.assertNotIn(str(aunit.ROOT), installed)
             self.assertEqual(15, len(list((project / '.codex/agents').glob('*.toml'))))
+            self.assertEqual(3, len(list((project / '.agents/skills/a-unit/references').glob('*.md'))))
 
 
 if __name__ == '__main__':
