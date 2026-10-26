@@ -8,7 +8,7 @@ This revision implements local Codex CLI packaging and conservative installation
 
 ## Editing rules
 
-- Keep roles focused on their specialty; put shared behavior in agents/_shared/engineering-contract.md.
+- Keep roles focused on their specialty; put shared behavior in agents/_shared/engineering-contract.md. Keep offline reference guidance in the explicit public allowlist under agents/_shared/knowledge/.
 - Packaging must include the complete shared contract before each role body. Resolve shared sources from the A-Unit package, not the target project's working directory; installed agents must be self-contained.
 - Keep repository-specific commands and conventions in the target project's instructions.
 - Preserve canonical identifiers unless a rename includes an explicit compatibility decision.
