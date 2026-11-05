@@ -393,17 +393,20 @@ class Packaging(unittest.TestCase):
             root = Path(tmp)
             source = root / 'source'
             source.mkdir()
-            for name in ['aunit.py', 'requirements.txt', 'README.md', 'LICENSE']:
-                shutil.copy(aunit.ROOT / name, source / name)
-            shutil.copytree(aunit.ROOT / 'agents', source / 'agents')
-            shutil.copytree(aunit.ROOT / 'templates', source / 'templates')
+            for name in aunit.PUBLIC_FILES:
+                destination = source / name
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(aunit.ROOT / name, destination)
             (source / 'private-plan.md').write_text('private maintainer notes')
+            (source / aunit.KNOWLEDGE_DIR / 'private.md').write_text('private guidance')
             one, two = root / 'one.zip', root / 'two.zip'
             with contextlib.redirect_stdout(io.StringIO()):
                 aunit.package(one, source)
                 aunit.package(two, source)
             self.assertEqual(one.read_bytes(), two.read_bytes())
             with zipfile.ZipFile(one) as archive:
+                self.assertEqual({f'a-unit/{name}' for name in (*aunit.PUBLIC_FILES, 'SOURCE_REVISION')},
+                                 set(archive.namelist()))
                 self.assertFalse(any('private' in name or 'AGENTS.md' == name for name in archive.namelist()))
                 archive.extractall(root / 'extracted')
             packaged = root / 'extracted/a-unit'
@@ -420,6 +423,34 @@ class Packaging(unittest.TestCase):
             self.assertNotIn(str(aunit.ROOT), installed)
             self.assertEqual(15, len(list((project / '.codex/agents').glob('*.toml'))))
             self.assertEqual(3, len(list((project / '.agents/skills/a-unit/references').glob('*.md'))))
+
+    def test_wheel_data_matches_public_allowlist(self):
+        metadata = tomllib.loads((aunit.ROOT / 'pyproject.toml').read_text())
+        files = set(metadata['tool']['setuptools']['package-data']['a_unit'])
+        self.assertEqual(set(aunit.PUBLIC_FILES) | {'SOURCE_REVISION'},
+                         files | {'aunit.py', '__init__.py', '__main__.py'})
+
+    def test_release_version_and_cli(self):
+        self.assertRegex(aunit.version(), r'^\d+\.\d+\.\d+$')
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            with self.assertRaises(SystemExit) as result:
+                aunit.main(['--version'])
+        self.assertEqual(0, result.exception.code)
+        self.assertEqual(f'a-unit {aunit.version()}', output.getvalue().strip())
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for invalid in ['v1.0.0', '1.0', '1.0.0\nprivate', '01.0.0']:
+                (root / 'VERSION').write_text(invalid)
+                with self.subTest(invalid=invalid), self.assertRaises(aunit.Error):
+                    aunit.version(root)
+
+    def test_release_tag_must_match_version_before_building(self):
+        from scripts.build_release import build
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / 'release'
+            with self.assertRaisesRegex(aunit.Error, 'does not match VERSION'):
+                build(output, 'v99999.0.0')
+            self.assertFalse(output.exists())
 
 
 if __name__ == '__main__':

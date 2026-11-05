@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=77,<85"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "a-unit"
+dynamic = ["version", "dependencies"]
+description = "Portable engineering agents and a conservative Codex CLI installer"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+
+[project.urls]
+Repository = "https://github.com/MisterVVP/a-unit"
+Releases = "https://github.com/MisterVVP/a-unit/releases"
+
+[project.scripts]
+a-unit = "a_unit.aunit:main"
+
+[tool.setuptools]
+packages = ["a_unit"]
+package-dir = {a_unit = "."}
+include-package-data = false
+
+[tool.setuptools.cmdclass]
+build_py = "_build.PublicBuild"
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+dependencies = {file = "requirements.txt"}
+
+[tool.setuptools.package-data]
+a_unit = [
+  "VERSION", "SOURCE_REVISION", "requirements.txt", "README.md", "LICENSE",
+  "pyproject.toml", "MANIFEST.in", "_build.py", "templates/AGENTS.md",
+  "agents/_shared/engineering-contract.md",
+  "agents/baracus.md", "agents/dock-norris.md", "agents/droid-rage.md",
+  "agents/face.md", "agents/go-rilla.md", "agents/hannibal.md",
+  "agents/lint-eastwood.md", "agents/murdock.md", "agents/nodefather.md",
+  "agents/pit-crew.md", "agents/plan-solo.md", "agents/repo-man.md",
+  "agents/sharp-shooter.md", "agents/snake-eyes.md", "agents/swift-justice.md",
+  "agents/trace-ventura.md", "agents/_shared/knowledge/react.md",
+  "agents/_shared/knowledge/observability.md",
+  "agents/_shared/knowledge/containers-kubernetes.md",
+]
