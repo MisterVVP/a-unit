@@ -3,3 +3,6 @@ __pycache__/
 *.py[cod]
 dist/
 work/
+build/
+*.egg-info/
+SOURCE_REVISION
