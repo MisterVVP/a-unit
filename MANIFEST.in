@@ -1,0 +1,12 @@
+include aunit.py __init__.py __main__.py _build.py pyproject.toml MANIFEST.in
+include VERSION SOURCE_REVISION requirements.txt README.md LICENSE
+include templates/AGENTS.md agents/_shared/engineering-contract.md
+include agents/baracus.md agents/dock-norris.md agents/droid-rage.md
+include agents/face.md agents/go-rilla.md agents/hannibal.md agents/lint-eastwood.md
+include agents/murdock.md agents/nodefather.md agents/pit-crew.md agents/plan-solo.md
+include agents/repo-man.md agents/sharp-shooter.md agents/snake-eyes.md
+include agents/swift-justice.md agents/trace-ventura.md
+include agents/_shared/knowledge/react.md agents/_shared/knowledge/observability.md
+include agents/_shared/knowledge/containers-kubernetes.md
+exclude AGENTS.md
+prune tests

@@ -1,9 +1,49 @@
 name: Packaging checks
+
 on:
   push:
+    branches: ['**']
   pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
 jobs:
-  python:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements.txt build
+      - run: python aunit.py validate
+      - run: python -m unittest discover -s tests -v
+      - run: python aunit.py render --output work/rendered
+      - id: version
+        shell: bash
+        run: echo "version=$(cat VERSION)" >> "$GITHUB_OUTPUT"
+      - name: Build versioned release artifacts
+        env:
+          RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+        shell: bash
+        run: |
+          if [ -n "$RELEASE_TAG" ]; then
+            python scripts/build_release.py --output dist --tag "$RELEASE_TAG"
+          else
+            python scripts/build_release.py --output dist
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a-unit-release
+          path: dist/*
+          if-no-files-found: error
+
+  install:
+    needs: build
     strategy:
       fail-fast: false
       matrix:
@@ -16,7 +56,14 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install -r requirements.txt
-      - run: python aunit.py validate
       - run: python -m unittest discover -s tests -v
-      - run: python aunit.py render --output dist/codex
-      - run: python aunit.py package --output dist/a-unit-codex.zip
+      - uses: actions/download-artifact@v4
+        with:
+          name: a-unit-release
+          path: ${{ runner.temp }}/a-unit-release
+      - name: Emulate installing a specific release on a clean host
+        env:
+          ARTIFACTS: ${{ runner.temp }}/a-unit-release
+          PACKAGE_VERSION: ${{ needs.build.outputs.version }}
+        run: python tests/package_smoke.py --artifacts "$env:ARTIFACTS" --version "$env:PACKAGE_VERSION"
+        shell: pwsh

@@ -1,0 +1,61 @@
+name: Publish release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yml
+
+  publish:
+    needs: checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: a-unit-release
+          path: dist
+      - name: Publish the tested artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          gh release create "$RELEASE_TAG" dist/* --verify-tag \
+            --title "A-Unit $RELEASE_TAG" --generate-notes
+
+  download-and-install:
+    needs: publish
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download this exact published version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          ARTIFACTS: ${{ runner.temp }}/published-a-unit
+        shell: pwsh
+        run: |
+          gh release download "$env:RELEASE_TAG" --dir "$env:ARTIFACTS" --pattern '*.whl' --pattern '*.zip' --pattern SHA256SUMS
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $version = $env:RELEASE_TAG.Substring(1)
+          python tests/package_smoke.py --artifacts "$env:ARTIFACTS" --version "$version"

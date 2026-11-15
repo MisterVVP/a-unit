@@ -2,54 +2,79 @@
 
 **No Gods. No Masters. Just Agents.**
 
-A portable engineering squad: Hannibal coordinates your main Codex CLI session and calls fifteen focused specialist agents. Each installed definition contains the complete shared engineering contract, its role instructions, and applicable offline engineering guidance. No source checkout or private documentation is needed at runtime.
+A portable engineering squad for Codex CLI: Hannibal coordinates your main session and calls fifteen focused specialists. Installed definitions contain the complete shared engineering contract, role instructions, and applicable offline guidance. The source checkout is not needed at runtime.
 
-**Status: local Codex CLI packaging preview.** The Python installer and automated checks are implemented. Adapter wiring was exercised on Linux with Codex CLI **0.159.2**, using an offline deterministic Responses fixture. Live-model engineering quality and macOS/Windows runtime behavior have not been evaluated. GitHub Packages and other runtime adapters are deferred.
+**Status: Codex CLI preview with versioned packaging.** A-Unit builds a universal Python wheel and portable ZIP for GitHub Releases. CI exercises installation, updates, and removal on Ubuntu, macOS, and Windows with Python 3.11 and 3.13. Codex adapter wiring has been exercised on Linux with CLI **0.159.2** using an offline fixture; live-model engineering quality and native macOS/Windows Codex runtime behavior remain unverified. Other runtime adapters are deferred.
 
-## Install on Ubuntu
+[Packaging CI](https://github.com/MisterVVP/a-unit/actions/workflows/checks.yml) · [Releases](https://github.com/MisterVVP/a-unit/releases)
 
-Prerequisites: Git, Python **3.11+** with `venv`/pip, and Codex CLI. Use **0.159.2** as the compatibility baseline; older versions are unverified. Authenticate Codex normally before your live trial (`codex login`).
+## Install a specific version
+
+Prerequisites: Python **3.11+** with pip/venv, and Codex CLI. Use Codex **0.159.2** as the compatibility baseline; older versions are unverified. Authenticate Codex normally (`codex login`). Git is optional for release installations.
+
+Packages are hosted as **GitHub Release assets**. GitHub Packages has no Python package registry. Use an exact release URL to select a version; the commands below use `0.1.0` as an example and require that release to have been published. See [Releases](https://github.com/MisterVVP/a-unit/releases) for available versions.
+
+On Linux or macOS:
 
 ```bash
-git clone https://github.com/MisterVVP/a-unit.git
-cd a-unit
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python aunit.py validate
+VERSION=0.1.0
+python3 -m venv .a-unit-venv
+.a-unit-venv/bin/python -m pip install "https://github.com/MisterVVP/a-unit/releases/download/v${VERSION}/a_unit-${VERSION}-py3-none-any.whl"
+.a-unit-venv/bin/a-unit --version
+.a-unit-venv/bin/a-unit install --user
+.a-unit-venv/bin/a-unit install --user --apply
+```
 
-# Preview a personal installation, then apply it.
-.venv/bin/python aunit.py install --user
-.venv/bin/python aunit.py install --user --apply
+On Windows, in PowerShell:
 
-# Start a NEW session in the repository you want to work on.
+```powershell
+$Version = '0.1.0'
+py -3.11 -m venv .a-unit-venv
+.\.a-unit-venv\Scripts\python.exe -m pip install "https://github.com/MisterVVP/a-unit/releases/download/v$Version/a_unit-$Version-py3-none-any.whl"
+.\.a-unit-venv\Scripts\a-unit.exe --version
+.\.a-unit-venv\Scripts\a-unit.exe install --user
+.\.a-unit-venv\Scripts\a-unit.exe install --user --apply
+```
+
+A newer Python also works; adjust the launcher selection. These commands require no environment activation or PowerShell execution-policy change. Below, `a-unit` means the executable in this virtual environment; use its full path or add the environment's executable directory to your PATH.
+
+The package installs the `a-unit` utility first. `a-unit install` previews the Codex files, and `--apply` writes them. Keep the utility environment for updates and uninstalling; Codex itself uses only the installed definitions.
+
+For an offline host, download the wheel and its PyYAML dependency on a machine with the same OS/Python/architecture using `python -m pip download --dest wheelhouse <exact-wheel-URL>`. Transfer `wheelhouse`, then use `python -m pip install --no-index --find-links wheelhouse a-unit==0.1.0` inside the host's environment.
+
+## Use the squad
+
+Start a **new** Codex session in the repository you want to work on:
+
+```bash
 cd /path/to/your/project
 codex
 ```
 
-Inside Codex, explicitly invoke the skill:
+Explicitly invoke the activation skill:
 
 ```text
 $a-unit Investigate this repository and propose a small, testable Python improvement. Do not edit yet.
 ```
 
-Hannibal stays in the main session. It invokes Trace Ventura for every coding task, including small changes, to plan observability early and validate affected coverage before completion. It invokes Dock Norris whenever work involves containerization, a local Dockerized setup, or Kubernetes deployment. It requests a fresh Lint Eastwood review of the final diff for every coding task, checking formatting/lint evidence, maintainability, security, and performance risks. Other specialists are selected when useful; Hannibal can implement small changes directly while still performing the required consultations. To verify delegation explicitly, ask:
+Hannibal stays in the main session. Coding tasks include Trace Ventura's observability consultation and a fresh Lint Eastwood review of the final diff. Container and Kubernetes work includes Dock Norris. Other specialists are selected as useful. To request one explicitly:
 
 ```text
 $a-unit Use aunit-snake-eyes for an inspection-only review of the Python code. Report findings and checks; do not edit files.
 ```
 
-If your CLI has multi-agent support disabled, enable it for the session with `codex --enable multi_agent`. Installation does not edit feature flags, model settings, concurrency, or permissions.
+If multi-agent support is disabled, enable it for the session with `codex --enable multi_agent`. Installation does not change model settings, feature flags, concurrency, or permissions. Canonical read-only modes describe behavior; runtime permissions come from the parent Codex session.
 
-## Project scope and other platforms
+## Installation scope
 
-Choose **one scope** for the activation skill. For a squad pinned to an existing repository, replace `--user` with an explicit project path:
+Choose **one scope**. For a squad pinned to an existing project, use an explicit path instead of `--user`:
 
 ```bash
-.venv/bin/python aunit.py install --project /path/to/your/project
-.venv/bin/python aunit.py install --project /path/to/your/project --apply
+a-unit install --project "/path/to/your/project"
+a-unit install --project "/path/to/your/project" --apply
 ```
 
-Paths with spaces work when quoted. The working directory never implicitly selects a target project. Installation leaves existing `AGENTS.md` and `config.toml` files untouched. The optional [project instruction template](templates/AGENTS.md) is a manual starting point.
+Quote paths containing spaces on every OS. The working directory never implicitly selects the target project. Existing `AGENTS.md`, `config.toml`, and unrelated files remain untouched. The [project instruction template](templates/AGENTS.md) is an optional manual starting point.
 
 | Artifact | User scope | Project scope |
 | --- | --- | --- |
@@ -57,40 +82,45 @@ Paths with spaces work when quoted. The working directory never implicitly selec
 | Hannibal activation skill | `~/.agents/skills/a-unit/` | `<project>/.agents/skills/a-unit/` |
 | Ownership manifest | `$CODEX_HOME/a-unit-manifest.json` | `<project>/.codex/a-unit-manifest.json` |
 
-`CODEX_HOME` changes the user **agent** destination; the preferred user **skill** destination remains `~/.agents/skills`. Set `CODEX_HOME` consistently when installing, running Codex, updating, and uninstalling. The manifest uses relative artifact paths so project installations can move with the repository.
+`CODEX_HOME` changes the user agent destination; the user skill destination remains `~/.agents/skills`. Set it consistently when installing, running Codex, updating, and uninstalling. On Windows, `~` denotes your user profile.
 
-Codex gives same-name project agent roles precedence over user roles in a trusted project. **Skills differ:** with `a-unit` installed in both scopes (or another copy under the legacy `$CODEX_HOME/skills` directory), `$a-unit` can be ambiguous and load neither copy. Remove the unwanted installation or select the intended skill explicitly through Codex's skill picker. Start a fresh session after changes. Project configuration may require the normal Codex trust decision; do not disable trust checks to load it.
-
-On macOS/Linux, use the same Python commands. On Windows, create the environment with `py -3.11 -m venv .venv` (or a newer Python), then replace `.venv/bin/python` with `.venv\Scripts\python.exe`. In PowerShell, quote environment variables and paths normally. The installer uses Python filesystem operations and no Bash, symlinks, or external installation commands. Existing symlink/reparse-point destinations are deliberately refused. Cross-platform CI is configured; local execution here covered Linux only.
-
-## Package and inspect locally
-
-No registry, wheel, or global executable is required. The local ZIP contains the Python utility, its dependency declaration, canonical role sources, license, public README, and optional project template. Definitions are rendered at installation time. Keep the ZIP and extracted directory only as long as needed to install or update.
-
-```bash
-.venv/bin/python aunit.py render --output dist/codex
-.venv/bin/python aunit.py package --output dist/a-unit-codex.zip
-```
-
-`render` requires a new output directory and produces `agents/*.toml` plus `skills/a-unit/`. `package` refuses to overwrite an existing archive. Both operations validate sources first. Output uses stable ordering, UTF-8, fixed ZIP timestamps, and no host-specific source paths. Only allowlisted public files enter the archive; repository instructions, internal notes, tests, and `.git` are excluded.
-
-You can transfer the ZIP to another machine, extract it, install `requirements.txt` in a Python environment, and run its `aunit.py install --user` (or `--project PATH`). Git is optional when installing the extracted bundle. Installation itself needs no network access once Python and PyYAML are available. Neither the virtual environment nor the extracted/source directory is a runtime dependency after installation.
+Project roles take precedence over user roles in a trusted project. Duplicate `a-unit` skills across scopes (including the legacy `$CODEX_HOME/skills` directory) can make `$a-unit` ambiguous. Remove the unwanted installation or select the intended skill with Codex's skill picker, then start a fresh session. Use Codex's normal project trust process.
 
 ## Update and uninstall
 
-Install commands preview by default. `--apply` prints the preflighted plan and applies it. Every source and destination is checked before writes. A SHA-256 ownership manifest tracks installed files; identical reinstallations do nothing. Updates replace unchanged managed files and remove unchanged stale artifacts.
-
-To update, fetch this branch's latest source or extract a newer bundle, then rerun the same install command and scope. Use the same `CODEX_HOME` for user updates.
+To update or select an older version, install that exact release wheel into the same utility environment with `python -m pip install --upgrade <exact-wheel-URL>`, then rerun `a-unit install` with the same scope and `--apply`. Changing the Python package alone does not update installed Codex definitions.
 
 ```bash
-.venv/bin/python aunit.py uninstall --user
-.venv/bin/python aunit.py uninstall --user --apply
-# Or use: uninstall --project /path/to/your/project [--apply]
+a-unit uninstall --user
+a-unit uninstall --user --apply
+# Or: a-unit uninstall --project "/path/to/project" [--apply]
 ```
 
-Unowned collisions and locally edited managed files block installation, including identical unowned files. Save or move conflicting files before retrying; there is no force overwrite. Missing managed files can be restored by reinstalling. Uninstall removes only owned files whose hashes still match, preserves and reports edits, retains their ownership entries, and exits with status 1 when manual cleanup remains. Unrelated files and directories are left intact; empty installation directories may remain.
+Uninstall the definitions before deleting the utility environment. `pip uninstall a-unit` only removes the utility package.
 
-Writes use atomic per-file replacement with recoverable backups. An ordinary write/remove failure rolls back previous contents; an incomplete recovery reports remaining paths and the backup location. Run one installer at a time. This is not a filesystem-wide transaction and does not promise recovery from process termination or power loss. Keep the manifest until removal is complete.
+Installation previews by default. Ownership hashes protect existing files: identical reinstallations do nothing; updates replace unchanged managed files and remove unchanged stale artifacts. Unowned collisions and locally edited managed files block updates. Save or move conflicting files before retrying; there is no force overwrite. Existing symlink/reparse-point destinations are refused.
+
+Uninstall preserves edited files, reports them, and exits with status 1 when manual cleanup is still needed. Keep the ownership manifest until removal is complete. Ordinary write/remove failures attempt rollback and report recovery paths if needed; run one installer at a time. Recovery from power loss or process termination is not guaranteed.
+
+## Build and publish
+
+Before the first release, you can install from a checkout with `python -m pip install .` in a virtual environment, then use the same `a-unit` commands. To build release assets locally:
+
+```bash
+python -m pip install -r requirements.txt build
+python scripts/build_release.py --output dist
+```
+
+The output directory must be new. A release contains `a_unit-<version>-py3-none-any.whl`, `a-unit-<version>.zip`, and `SHA256SUMS`. The ZIP can also be extracted and used with `python aunit.py` after installing its `requirements.txt`. Both formats contain only allowlisted public sources; neither includes repository instructions, private notes, tests, or Git history.
+
+Maintainers publish by committing the desired `VERSION` (`MAJOR.MINOR.PATCH`) and pushing its matching tag:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Use a new version and tag for each release. The release workflow rejects mismatched versions, builds once, verifies those artifacts across all three operating systems, then publishes them using GitHub's built-in token. It downloads the published version and repeats installation checks on each OS. Pull requests emulate the same host lifecycle using downloaded CI artifacts without publishing a release. Each release's checksums can be used to verify downloaded assets (`sha256sum -c SHA256SUMS`, `shasum -a 256 -c SHA256SUMS`, or PowerShell `Get-FileHash -Algorithm SHA256`).
 
 ## The gang
 
@@ -113,74 +143,10 @@ Writes use atomic per-file replacement with recoverable backups. An ordinary wri
 | Dock Norris | Docker, Kubernetes, and DevOps delivery | [dock-norris](agents/dock-norris.md), `aunit-dock-norris` |
 | Trace Ventura | Observability, golden signals, and SLI/SLOs | [trace-ventura](agents/trace-ventura.md), `aunit-trace-ventura` |
 
-Repo Man organizes application and library source under `src/` (including Go), tests under `tests/`, documentation under `docs/`, and IaC, Helm charts, and observability configuration under `ops/`. Its default monorepo layout uses `src/apps/<app>/` and `src/libs/<library>/`, with no application code at the repository root. It checks tool constraints and migration paths with the domain owners; existing project requirements take precedence. Use `aunit-repo-man` for layout design, implementation, or inspection-only reviews.
 
-Each specialist supports bounded implement, investigate, review, or validate assignments as appropriate to its mode. Lint Eastwood and Plan Solo inspect without tracked-file edits. Model and reasoning selection inherit from the session. A fresh domain reviewer should receive the requirements, baseline/diff, edit restrictions, and evidence rather than relying on the author's summary.
+## Troubleshooting
 
-Trace Ventura reuses existing telemetry and checks metrics, structured logs, distributed traces, and applicable dashboards. For services, it covers latency, traffic, errors, saturation, a clearly defined availability/uptime signal, and SLI/SLO views with targets, error budgets, and missing-data behavior. It distinguishes process uptime and scrape health from service availability. SLO targets follow project policy or remain explicitly proposed until agreed. Code without a running service still gets an observability consultation, with evidence for inapplicable signals instead of unnecessary monitoring infrastructure.
-
-Dock Norris covers reproducible images, secure Docker/Compose setups, Kubernetes resource/probe configuration, and safe delivery/rollback practices. It coordinates runtime wiring with Pit Crew and rollout telemetry with Trace Ventura. Required routing is an instruction contract; runtime permissions and user authorization still govern all edits and deployments. Missing required specialists are reported as installation blockers. Face, Dock Norris, and Trace Ventura carry concise offline engineering guidance embedded in their installed instructions. The same guidance is installed as readable Markdown under the A-Unit skill's `references/` directory, without requiring web browsing.
-
-All coding roles share explicit readability and completion rules: separate function/method declarations and logical blocks with useful blank lines, prefer clear names and cohesive control flow, assess nesting and cyclomatic complexity, and preserve correctness and measured performance without speculative abstractions. Authors format owned changes, run project-configured lint/static analysis and relevant tests, inspect the final diff, and report exact check states. Missing tooling is a validation gap; tests passing is not evidence that lint ran. Project policy and pinned versions govern tooling; no formatter/linter is automatically installed by this adapter.
-
-| Language / area | Standard tooling guidance, subject to project configuration |
-| --- | --- |
-| C++ | clang-format and clang-tidy with a real compilation database |
-| Go | gofmt, existing import tool, go vet, golangci-lint or Staticcheck; manually separate functions because gofmt does not insert blank lines |
-| C# / .NET | .editorconfig, dotnet format verification, enabled Roslyn/.NET analyzers; established StyleCop/Roslynator rules |
-| Python | Ruff format/check or existing Black/isort and Flake8/Pylint; established mypy/Pyright checks |
-| JavaScript / React | ESLint plus Prettier or existing Biome; React Hooks/accessibility rules and existing type checks |
-| Android Kotlin / Java | ktlint/Spotless, established Detekt, Android Lint, and existing Java analysis |
-| iOS Swift / Objective-C | Configured swift-format/SwiftFormat, SwiftLint, or Clang tooling |
-| Integration / operations / telemetry | Relevant language tools plus established shell, YAML, chart, IaC, and telemetry validators |
-
-Lint Eastwood reviews the actual final diff and evidence, reports concrete findings with file/line and impact, and returns fixes to the owning developer. It checks spacing and complexity beyond formatter output, security boundaries, and credible performance risks. Review remains inspection only; missing required roles or checks are reported, and no clean review guarantees vulnerability-free or high-performance code.
-
-Examples:
-
-```text
-$a-unit Have aunit-lint-eastwood review the final diff, verify lint evidence, and report maintainability, security, and performance findings. Inspect only; do not edit.
-$a-unit Have aunit-repo-man review our monorepo layout and propose a src/, tests/, docs/, and ops/ organization. Inspect only; do not move files.
-$a-unit Fix the Python pagination regression and run the relevant tests.
-$a-unit Add this API response field and expose it in the React JavaScript UI. Coordinate backend, Face, and QA ownership.
-$a-unit Have a fresh aunit-face inspect the frontend diff for correctness and accessibility. Review only; do not edit.
-$a-unit Add a local Docker Compose setup with Dock Norris and have Trace Ventura check the service telemetry and golden-signal dashboard.
-```
-
-Canonical `mode` describes behavioral intent. Plan Solo and Lint Eastwood are inspection only; a review assignment restricts any specialist to inspection. This adapter does **not** translate `mode` into an independent sandbox or disable tools. The parent session's sandbox, approvals, and permissions govern children. Runtime-supported role tool reductions vary by Codex version; this adapter deliberately emits only name, description, and developer instructions. Target repository requirements apply within the runtime instruction hierarchy. Display names remain provisional codenames.
-
-## Checks and compatibility evidence
-
-```bash
-.venv/bin/python aunit.py validate
-.venv/bin/python -m unittest discover -s tests -v
-# Optional: installed Codex + permission to bind a loopback port; no API key.
-.venv/bin/python tests/codex_smoke.py
-# Check a specialist's actual loading and invocation with the same fixture.
-.venv/bin/python tests/codex_smoke.py --role dock-norris
-.venv/bin/python tests/codex_smoke.py --role trace-ventura
-.venv/bin/python tests/codex_smoke.py --role repo-man
-.venv/bin/python tests/codex_smoke.py --role lint-eastwood
-```
-
-In a managed environment with a separate execution server, use `tests/codex_smoke.py --work-dir /path/shared/with/that/server` if needed. The smoke check uses only temporary installations and a deterministic local Responses fixture, not a live model. It removes extracted package sources before starting Codex and verifies actual spawn/wait events and provider-bound instruction content.
-
-| Check | Evidence in this implementation |
-| --- | --- |
-| Python validation, rendering, installer, local ZIP | 25 tests passed on Linux / Python 3.12 |
-| Actual CLI discovery and activation | Prior roster: Codex CLI 0.159.2 on Linux advertised all 13 then-existing roles and injected the complete project skill |
-| Lint Eastwood CLI loading | Blocked: the deterministic fixture could not create its loopback socket (PermissionError); fifteen-role CLI discovery and reviewer invocation remain unverified |
-| Repo Man CLI loading | Blocked in this environment: the deterministic fixture could not create its loopback socket; fourteen-role CLI discovery and Repo Man invocation remain unverified |
-| Actual child invocation | Python, container/DevOps, and observability specialist fixture checks; full shared contract and role body present in child developer instructions |
-| Inheritance | Child request retained parent model and reasoning; read-only parent permission context present |
-| Scope behavior | Project-over-user role precedence and custom `CODEX_HOME` exercised; duplicate skill names made bare `$a-unit` ambiguous |
-| Preferred user skill root | Upstream released-source conventions and path tests; real home directory left untouched by smoke tests |
-| macOS / Windows | Installer designed for both; CI matrix configured, not run from this environment |
-| Live-model and role quality | Not run; all language/platform roles remain unevaluated for real engineering work |
-
-For your authenticated Ubuntu trial, install one scope, start a fresh session outside this checkout, invoke `$a-unit`, request the Python inspection above, and confirm the specialist appears in Codex's agent activity. Then try a small authorized change in a disposable repository, inspect the actual diff, and run that project's tests. Android/iOS behavior needs suitable build/device hosts before claiming coverage.
-
-If agents are missing, check `codex --version`, the printed destinations, project trust, and multi-agent availability. If the skill is missing, check the scope table and duplicate copies, then restart Codex. A successful offline fixture does not replace that live trial.
+If roles are missing, check `codex --version`, the printed destinations, project trust, and multi-agent availability. If the skill is missing, check scope and duplicate copies, then restart Codex. Platform installation tests cover file delivery and lifecycle; live tasks, Android/iOS builds, and native Codex runtime behavior need their own suitable hosts.
 
 ## License
 

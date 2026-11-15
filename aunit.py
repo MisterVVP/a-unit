@@ -27,6 +27,13 @@ IDENTIFIER = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*\Z")
 KNOWLEDGE_BY_ROLE = {"face": "react.md", "dock-norris": "containers-kubernetes.md", "trace-ventura": "observability.md"}
 KNOWLEDGE_DIR = "agents/_shared/knowledge"
 ROSTER = frozenset("hannibal plan-solo baracus go-rilla snake-eyes nodefather sharp-shooter face droid-rage swift-justice murdock pit-crew dock-norris trace-ventura repo-man lint-eastwood".split())
+PUBLIC_FILES = (
+    "aunit.py", "__init__.py", "__main__.py", "_build.py", "pyproject.toml", "MANIFEST.in",
+    "VERSION", "requirements.txt", "README.md", "LICENSE", "templates/AGENTS.md",
+    "agents/_shared/engineering-contract.md",
+    *(f"agents/{name}.md" for name in sorted(ROSTER)),
+    *(f"{KNOWLEDGE_DIR}/{name}" for name in sorted(set(KNOWLEDGE_BY_ROLE.values()))),
+)
 
 
 class Error(Exception):
@@ -67,6 +74,13 @@ def text_file(path: Path) -> str:
     if not text.strip():
         raise Error(f"Required content is empty: {path}")
     return text
+
+
+def version(root: Path = ROOT) -> str:
+    value = text_file(root / "VERSION").strip()
+    if not re.fullmatch(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)", value):
+        raise Error("VERSION must contain a release version: MAJOR.MINOR.PATCH")
+    return value
 
 
 def sources(root: Path = ROOT) -> tuple[str, list[Role]]:
@@ -214,7 +228,8 @@ def revision(root: Path = ROOT) -> str | None:
     # git metadata is optional (e.g. an extracted package). Never require Git.
     try:
         if not (root / ".git").exists():
-            return text_file(root / "SOURCE_REVISION").strip() if (root / "SOURCE_REVISION").exists() else None
+            return (text_file(root / "SOURCE_REVISION").strip() if (root / "SOURCE_REVISION").exists()
+                    else f"version:{version(root)}")
         result = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True, check=True)
         dirty = subprocess.run(["git", "-C", str(root), "status", "--porcelain"], capture_output=True, text=True, check=True)
         return result.stdout.strip() + ("+dirty" if dirty.stdout else "")
@@ -371,11 +386,8 @@ def apply_plan(plan: Plan) -> None:
 
 def package(path: Path, root: Path = ROOT) -> None:
     sources(root)
-    files = [root / "aunit.py", root / "requirements.txt", root / "README.md", root / "LICENSE",
-             root / "templates/AGENTS.md", root / "agents/_shared/engineering-contract.md"]
-    files += sorted((root / "agents").glob("*.md"))
-    files += sorted((root / KNOWLEDGE_DIR).glob("*.md"))
-    payload = {str(p.relative_to(root)): p.read_bytes() for p in files}
+    version(root)
+    payload = {name: text_file(root / name).encode("utf-8") for name in PUBLIC_FILES}
     payload["SOURCE_REVISION"] = ((revision(root) or "unknown") + "\n").encode()
     safe_path(path)
     if path.exists():
@@ -396,6 +408,7 @@ def package(path: Path, root: Path = ROOT) -> None:
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--version", action="version", version=f"a-unit {version()}")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("validate", help="Validate canonical sources")
     p = sub.add_parser("render", help="Render standalone Codex artifacts into a new directory")
