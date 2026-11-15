@@ -12,12 +12,12 @@ A portable engineering squad for Codex CLI: Hannibal coordinates your main sessi
 
 Prerequisites: Python **3.11+** with pip/venv, and Codex CLI. Use Codex **0.159.2** as the compatibility baseline; older versions are unverified. Authenticate Codex normally (`codex login`). Git is optional for release installations.
 
-Packages are hosted as **GitHub Release assets**. GitHub Packages has no Python package registry. Use an exact release URL to select a version; the commands below use `0.1.0` as an example and require that release to have been published. See [Releases](https://github.com/MisterVVP/a-unit/releases) for available versions.
+Packages are hosted as **GitHub Release assets**. GitHub Packages has no Python package registry. Use an exact release URL to select a version; the commands below use `0.0.1` as an example and require that release to have been published. See [Releases](https://github.com/MisterVVP/a-unit/releases) for available versions.
 
 On Linux or macOS:
 
 ```bash
-VERSION=0.1.0
+VERSION=0.0.1
 python3 -m venv .a-unit-venv
 .a-unit-venv/bin/python -m pip install "https://github.com/MisterVVP/a-unit/releases/download/v${VERSION}/a_unit-${VERSION}-py3-none-any.whl"
 .a-unit-venv/bin/a-unit --version
@@ -28,7 +28,7 @@ python3 -m venv .a-unit-venv
 On Windows, in PowerShell:
 
 ```powershell
-$Version = '0.1.0'
+$Version = '0.0.1'
 py -3.11 -m venv .a-unit-venv
 .\.a-unit-venv\Scripts\python.exe -m pip install "https://github.com/MisterVVP/a-unit/releases/download/v$Version/a_unit-$Version-py3-none-any.whl"
 .\.a-unit-venv\Scripts\a-unit.exe --version
@@ -40,7 +40,7 @@ A newer Python also works; adjust the launcher selection. These commands require
 
 The package installs the `a-unit` utility first. `a-unit install` previews the Codex files, and `--apply` writes them. Keep the utility environment for updates and uninstalling; Codex itself uses only the installed definitions.
 
-For an offline host, download the wheel and its PyYAML dependency on a machine with the same OS/Python/architecture using `python -m pip download --dest wheelhouse <exact-wheel-URL>`. Transfer `wheelhouse`, then use `python -m pip install --no-index --find-links wheelhouse a-unit==0.1.0` inside the host's environment.
+For an offline host, download the wheel and its PyYAML dependency on a machine with the same OS/Python/architecture using `python -m pip download --dest wheelhouse <exact-wheel-URL>`. Transfer `wheelhouse`, then use `python -m pip install --no-index --find-links wheelhouse a-unit==0.0.1` inside the host's environment.
 
 ## Use the squad
 
@@ -116,8 +116,8 @@ The output directory must be new. A release contains `a_unit-<version>-py3-none-
 Maintainers publish by committing the desired `VERSION` (`MAJOR.MINOR.PATCH`) and pushing its matching tag:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.0.1
+git push origin v0.0.1
 ```
 
 Use a new version and tag for each release. The release workflow rejects mismatched versions, builds once, verifies those artifacts across all three operating systems, then publishes them using GitHub's built-in token. It downloads the published version and repeats installation checks on each OS. Pull requests emulate the same host lifecycle using downloaded CI artifacts without publishing a release. Each release's checksums can be used to verify downloaded assets (`sha256sum -c SHA256SUMS`, `shasum -a 256 -c SHA256SUMS`, or PowerShell `Get-FileHash -Algorithm SHA256`).
